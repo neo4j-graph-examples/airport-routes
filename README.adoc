@@ -1,23 +1,23 @@
-:name: graph-data-science
-:long-name: Graph Data Science
-:description: Leverage Neo4j Graph Data Science library to explore graph algorithms for analytics and feature engineering.
+:name: graph-data-science2
+:long-name: Graph Data Science 2
+:description: Leverage Neo4j Graph Data Science 2.0 library to explore graph algorithms for analytics and feature engineering.
 :icon: documentation/img/gds2_opening_image.png
-:tags: example-data,dataset,got-data,graph-data-science,graph-algorithms,graph-features
+:tags: example-data,dataset,graph-data-science,graph-algorithms,graph-features
 :author: Clair Sullivan
 :demodb: false
 :data: false
 :use-load-script: false
-:use-dump-file: data/graph-data-science-40.dump
+:use-dump-file: data/neo4j.dump
 :zip-file: false
 :use-plugin: gds
 :target-db-version: 4.4
-:bloom-perspective: bloom/graph-data-science.bloom-perspective
+// :bloom-perspective: bloom/graph-data-science.bloom-perspective
 :guide: documentation/graph-data-science2.neo4j-browser-guide
-:rendered-guide: https://guides.neo4j.com/sandbox/graph-data-science2/index.html
+:rendered-guide: https://guides.neo4j.com/sandbox/graph-data-science2/gds_browser_guide2.html
 :model: documentation/img/air_route_schema.png
-:example: documentation/img/example.svg
-:nodes: 2642
-:relationships: 16747
+:example: documentation/img/example.png
+:nodes: 8627
+:relationships: 73954
 
 :todo: false
 image::{icon}[width=100]
@@ -39,10 +39,10 @@ image::{model}[]
 image::{example}[width=600]
 
 .Example Query:
-[source,cypher,role=query-example,param-name=name,param-value="Jaime Lannister",result-column=person,expected-result="Tyrion Lannister"]
+[source,cypher,role=query-example,param-name=iata,param-value="DEN",result-column=iata,expected-result="Denver"]
 ----
-MATCH (c:Person{name:$name})-[r:INTERACTS]->(other)
-  RETURN other.name as person
+MATCH (a:Airport{iata:$iata})-[r:IN_CITY]->(c:City)
+  RETURN c.name as city
 ----
 
 === Setup
