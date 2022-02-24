@@ -578,4 +578,4 @@ Congratulations!  You have taken your first steps into using the Neo4j Graph Dat
 
 === Next steps
 
-If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/graph-data-science/[AuraDS^]!
+If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/aurads[AuraDS^]!
