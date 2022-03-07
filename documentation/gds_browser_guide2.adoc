@@ -177,7 +177,7 @@ YIELD
     graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount
 ----
 
-This is a very simple graph projection, but it is possible to add multiple node types and relationship types as well as properties for each of the nodes and relationships.  To see more examples of creating native graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project/#graph-project-examples[GDS documentation^].
+This is a very simple graph projection, but it is possible to add multiple node types and relationship types as well as properties for each of the nodes and relationships.  To see more examples of creating native graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project/?ref=gds-sandbox#graph-project-examples[GDS documentation^].
 
 == Graph catalog: creating a graph with Cypher projections
 
@@ -217,7 +217,7 @@ YIELD
 
 We can see here that Cypher projections work with the internal `id` of each node, which is returned in the node query and then used in the relationship query.  Note that GDS requires the specification of the `source` and `target` nodes in the relationship query.
 
-By using Cypher projections, we can specify many things, such as requirements on the node and relationship properties and more sophisticated relationships.  To see more examples of creating Cypher graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/#graph-project-examples[GDS documentation^].
+By using Cypher projections, we can specify many things, such as requirements on the node and relationship properties and more sophisticated relationships.  To see more examples of creating Cypher graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/?ref=gds-sandbox#graph-project-examples[GDS documentation^].
 
 
 == Graph catalog: listing and existence
@@ -269,7 +269,7 @@ In addition to the above for modes, it is possible to use `estimate` to obtain a
 
 === A special note on `mutate` mode
 
-When it comes time for feature engineering, you will likely want to include some quantities calculated by GDS into your graph projection.  This is what `mutate` is for.  It does not change the database itself, but writes the results of the calculation to each node within the projected graph for future calculations.  It is beyond the scope of this guide, but is covered in more detail in link:https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#running-algos-mutate[the API docs^].
+When it comes time for feature engineering, you will likely want to include some quantities calculated by GDS into your graph projection.  This is what `mutate` is for.  It does not change the database itself, but writes the results of the calculation to each node within the projected graph for future calculations.  It is beyond the scope of this guide, but is covered in more detail in link:https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/?ref=gds-sandbox#running-algos-mutate[the API docs^].
 
 == Algorithm syntax: general algorithm use
 
@@ -301,7 +301,7 @@ There are many ways to determine the centrality or importance of a node, but one
 
 The algorithm itself is an iterative algorithm.  The number of iterations can be set as a configuration parameter in GDS, however the algorithm can terminate if the node scores converge based on a specified tolerance value, which is also configurable in GDS.
 
-PageRank can be run on a basic graph, such as what we are using here, or with a weighted graph.  To see how to run it on a weighted graph, please explore the link:https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/#algorithms-page-rank-examples-weighted[GDS documentation^].
+PageRank can be run on a basic graph, such as what we are using here, or with a weighted graph.  To see how to run it on a weighted graph, please explore the link:https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/?ref=gds-sandbox#algorithms-page-rank-examples-weighted[GDS documentation^].
 
 == PageRank example graph
 
