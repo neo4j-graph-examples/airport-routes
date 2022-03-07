@@ -68,7 +68,7 @@ Load graph data via the following:
 ifeval::[{data} != false]
 ==== Data files: `{data}`
 
-Import flat files (csv, json, etc) using Cypher's https://neo4j.com/docs/cypher-manual/current/clauses/load-csv/[`LOAD CSV`], https://neo4j.com/labs/apoc/[APOC library], or https://neo4j.com/developer/data-import/[other methods].
+Import flat files (csv, json, etc) using Cypher's https://neo4j.com/docs/cypher-manual/current/clauses/load-csv/?ref=gds-sandbox[`LOAD CSV`], https://neo4j.com/labs/apoc/?ref=gds-sandbox[APOC library], or https://neo4j.com/developer/data-import/?ref=gds-sandbox[other methods].
 endif::[]
 
 ifeval::[{use-dump-file} != false]
@@ -100,7 +100,7 @@ endif::[]
 ifeval::[{zip-file} != false]
 ==== Zip file
 
-Download the zip file link:{repo}/raw/master/{name}.zip[{name}.zip] and add it as "project from file" to https://neo4j.com/developer/neo4j-desktop[Neo4j Desktop^].
+Download the zip file link:{repo}/raw/master/{name}.zip[{name}.zip] and add it as "project from file" to https://neo4j.com/developer/neo4j-desktop/?ref=neo4j-sandbox[Neo4j Desktop^].
 endif::[]
 
 === Code Examples
