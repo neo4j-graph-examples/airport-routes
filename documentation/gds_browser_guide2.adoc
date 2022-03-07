@@ -93,7 +93,7 @@ Finally, we will import the `(Airport)-[:HAS_ROUTE]-(Airport)` relationship.  No
 
 [source,cypher]
 ----
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/cj2001/bite_sized_data_science/main/data/iroutes-edges.csv' AS row
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/neo4j-graph-examples/graph-data-science2/main/data/iroutes-edges.csv' AS row
 MATCH (source:Airport {iata: row.src})
 MATCH (target:Airport {iata: row.dest})
 MERGE (source)-[r:HAS_ROUTE]->(target)
