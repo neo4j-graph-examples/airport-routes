@@ -13,7 +13,7 @@
 
 image:https://guides.neo4j.com/graph-data-science2/gds2_opening_image.png[role="left",width=150]
 
-Traditional data science and machine learning applications has relied on creating knowledge and understanding using columnar data.  Each row of data (or each data point) is treated as independent from the others.  However, there are many examples where considering the existing relationships between each data point can create more accurate models.  Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.  
+Traditional data science and machine learning applications have relied on creating knowledge and understanding using columnar data.  Each row of data (or each data point) is treated as independent from the others.  However, there are many examples where considering the existing relationships between each data point can create more accurate models.  Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.  
 
 This guide will walk you through some of the common algorithms that can be used in graph data science.  In this guide, we will introduce you to how to use the Neo4j Graph Data Science library to solve some common data science problems using graphs.
 
