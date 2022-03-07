@@ -128,7 +128,7 @@ RETURN min(num) AS min, max(num) AS max, avg(num) AS avg_routes, stdev(num) AS s
 
 == Graph creation
 
-The first step in executing any GDS algorithm is to create a graph projection (also referred to as an in-memory graph) under a user-defined name.  Graph projections are subsets of our full graph to be used in calculating results through the GDS algorithms.  Their use enables GDS to run quickly and efficiently through the calculations.  In the creation of these projections, the nature of the graph elements may change in the following ways:
+The first step in executing any GDS algorithm is to create a graph projection (also referred to as an in-memory graph) under a user-defined name.  Graph projections, stored in the graph catalog under a user-defined name, are subsets of our full graph to be used in calculating results through the GDS algorithms.  Their use enables GDS to run quickly and efficiently through the calculations.  In the creation of these projections, the nature of the graph elements may change in the following ways:
 
 * Nodes and relationship types might be renamed
 * Several node or relationship types might be merged
@@ -136,9 +136,7 @@ The first step in executing any GDS algorithm is to create a graph projection (a
 * Parallel relationships might be aggregated
 * Relationships might be derived from larger patterns
 
-// I am leaving out the mention of subgraphs since that is a pretty complex topic
-
-Graph projections can be created through one of two methods: native projections and Cypher projections.  These graph projections are then stored in the graph catalog under a user-defined name.
+In this section we will explore how to project a graph using the native projection approach.  It should be noted that graphs can also be create via link:https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/?ref=gds-sandbox#graph-project-examples[Cypher projections^], but these are beyond the scope of this guide.
 
 == Graph catalog: creating a graph with native projections
 
@@ -178,46 +176,6 @@ YIELD
 ----
 
 This is a very simple graph projection, but it is possible to add multiple node types and relationship types as well as properties for each of the nodes and relationships.  To see more examples of creating native graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project/?ref=gds-sandbox#graph-project-examples[GDS documentation^].
-
-== Graph catalog: creating a graph with Cypher projections
-
-There are times where native projections are not expressive enough to capture exactly what you need in the graph. In these cases, Cypher can be used to create the graph projection. Instead of optimizing for scale and performance like the native projection, Cypher projections are specifically optimized for flexibility and customizability to support developmental analysis and experimentation on smaller subsets of the graph.  The overall syntax for this is:
-
-[source,cypher]
-----
-CALL gds.graph.project.cypher(
-    graphName: String,
-    nodeQuery: String,
-    relationshipQuery: String,
-    configuration: Map
-) YIELD
-    graphName: String,
-    nodeQuery: String,
-    nodeCount: Integer,
-    relationshipQuery: String,
-    relationshipCount: Integer,
-    projectMillis: Integer,
-    createMillis: Integer
-----
-
-The difference between this and the native projection is that the node and relationships projections are replaced with Cypher statements.
-
-== Example of a Cypher projection
-
-[source,cypher]
-----
-CALL gds.graph.project.cypher(
-    'routes-cypher',
-    'MATCH (a:Airport) RETURN id(a) AS id',
-    'MATCH (a1:Airport)-[:HAS_ROUTE]->(a2:Airport) RETURN id(a1) AS source, id(a2) AS target'
-)
-YIELD
-    graphName, nodeCount, relationshipCount
-----
-
-We can see here that Cypher projections work with the internal `id` of each node, which is returned in the node query and then used in the relationship query.  Note that GDS requires the specification of the `source` and `target` nodes in the relationship query.
-
-By using Cypher projections, we can specify many things, such as requirements on the node and relationship properties and more sophisticated relationships.  To see more examples of creating Cypher graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/?ref=gds-sandbox#graph-project-examples[GDS documentation^].
 
 
 == Graph catalog: listing and existence
@@ -567,7 +525,6 @@ To free up memory, do not forget to drop your unused graph projections!
 [source,cypher]
 ----
 CALL gds.graph.drop('routes');
-CALL gds.graph.drop('routes-cypher');
 CALL gds.graph.drop('routes-weighted');
 ----
 
