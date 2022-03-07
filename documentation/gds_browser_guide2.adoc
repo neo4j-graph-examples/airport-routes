@@ -245,8 +245,6 @@ There are many ways to determine the centrality or importance of a node, but one
 
 The algorithm itself is an iterative algorithm.  The number of iterations can be set as a configuration parameter in GDS, however the algorithm can terminate if the node scores converge based on a specified tolerance value, which is also configurable in GDS.
 
-PageRank can be run on a basic graph, such as what we are using here, or with a weighted graph.  To see how to run it on a weighted graph, please explore the link:https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/?ref=gds-sandbox#algorithms-page-rank-examples-weighted[GDS documentation^].
-
 == PageRank example graph
 
 We will utilize the `routes` graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:
@@ -275,6 +273,8 @@ ORDER BY score DESC, iata ASC
 ----
 
 Here we see that we have returned the results of the calculation, mapped in the internal `id` space, as well as the PageRank score.  We then extract the `iata` code of the airport from the `id` space using `gds.util.asNode()`.  We can see that the output is the airport codes, ordered by decreasing PageRank score.  The airports with the highest PageRank scores are very popular airports around the globe, as we would expect.
+
+Note that PageRank can also be run on a basic graph, such as what we are using here, or with a weighted graph.  To see how to run it on a weighted graph, please explore the link:https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/?ref=gds-sandbox#algorithms-page-rank-examples-weighted[GDS documentation^].
 
 == Interpretting results of an algorithm
 
