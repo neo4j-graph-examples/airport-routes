@@ -434,7 +434,7 @@ In this case, we have calculated the airport with the highest similarity for eac
 
 == Node similarity: degree and similarity cutoff
 
-Other ways of limiting the number of calculations done include by providing a minimum value of degree for a node to be considered in the overall calculations, such as below where we require a minimum degree of 100 (i.e. a minimum of 100 flights coming in to and out of an airport):
+Another way of limiting the number of calculations done is to provide a minimum value of degree for a node to be considered in the overall calculations, such as below where we require a minimum degree of 100 (i.e. a minimum of 100 flights coming in to and out of an airport):
 
 [source,cypher]
 ----
