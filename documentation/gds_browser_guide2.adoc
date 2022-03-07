@@ -34,7 +34,7 @@ The official GDS documentation can be found link:https://neo4j.com/docs/graph-da
 
 Before you run any of the algorithms, you need to import your data.  We will be working with an example dataset that shows the connections between different airports across the world. Note that we have 5 different node labels (`Airport`, `City`, `Country`, `Continent`, and `Region`) and 5 different relationship types (`:HAS_ROUTE`, `:IN_CITY`, `:IN_COUNTRY`, `:IN_REGION`, and `:ON_CONTINENT`).
 
-image::https://guides.neo4j.com/graph-data-science2/air_route_schema.png[float="right",width=300]
+image::https://guides.neo4j.com/graph-data-science2/graph_model.png[float="right",width=400,height=400]
 
 === Attribution
 
