@@ -529,4 +529,4 @@ Congratulations!  You have taken your first steps into using Neo4j Graph Data Sc
 
 === Next steps
 
-If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/aurads/?ref=gds-sandbox[AuraDS^]!
+If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/aurads/?ref=gds-sandbox[AuraDS^]!  Alternatively, you can also explore more in the link:https://sandbox.neo4j.com/?ref=gds-sandbox[Neo4j Sandbox^], link:https://neo4j.com/download/?ref=get-started-dropdown-cta/?ref=gds-sandbox[Neo4j Desktop^], or link:https://neo4j.com/developer/docker/?ref=gds-sandbox[Docker^.]
