@@ -15,12 +15,12 @@ image:https://guides.neo4j.com/graph-data-science2/gds2_opening_image.png[role="
 
 Traditional data science and machine learning applications have relied on creating knowledge and understanding using columnar data.  Each row of data (or each data point) is treated as independent from the others.  However, there are many examples where considering the existing relationships between each data point can create more accurate models.  Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.  
 
-This guide will walk you through some of the common algorithms that can be used in graph data science.  In this guide, we will introduce you to how to use the Neo4j Graph Data Science library to solve some common data science problems using graphs.
+This guide will walk you through some of the common algorithms that can be used in graph data science.  In this guide, we will introduce you to how to use Neo4j Graph Data Science (GDS) to solve some common data science problems using graphs.
 
 == Neo4j Graph Data Science
 
 
-The Neo4j Graph Data Science (GDS) library contains a set of graph algorithms, exposed through Cypher procedures.  Graph algorithms provide insights into the graph structure and elements, for example, by computing centrality, similarity scores, and detecting communities.  The GDS library is divided into three tiers of maturity: product, beta, and alpha.
+Neo4j Graph Data Science (GDS) contains a set of graph algorithms, exposed through Cypher procedures.  Graph algorithms provide insights into the graph structure and elements, for example, by computing centrality, similarity scores, and detecting communities.  
 
 This guide demonstrates the usual workflow for how to run production-tier algorithms.  The generalized workflow is as follows: 
 
@@ -28,7 +28,7 @@ This guide demonstrates the usual workflow for how to run production-tier algori
 * How graph projections are used to run a graph algorithm with GDS
 * Examples of running a few graph algorithms and interpretation of their results
 
-The official GDS library documentation can be found link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[here^].
+The official GDS documentation can be found link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[here^].
 
 == Graph Model
 
@@ -573,7 +573,7 @@ CALL gds.graph.drop('routes-weighted');
 
 == The end
 
-Congratulations!  You have taken your first steps into using the Neo4j Graph Data Science (GDS) library!  This tutorial just looked at the basics of how to run graph algorithms and demonstrated the approach on a very limited number of basic algorithms.  To learn more about what other algorithms exists as well as details for all of their configurations, please see link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[the GDS documentation^].
+Congratulations!  You have taken your first steps into using Neo4j Graph Data Science!  This tutorial just looked at the basics of how to run graph algorithms and demonstrated the approach on a very limited number of basic algorithms.  To learn more about what other algorithms exists as well as details for all of their configurations, please see link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[the GDS documentation^].
 
 === Next steps
 
