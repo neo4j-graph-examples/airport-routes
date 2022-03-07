@@ -24,9 +24,9 @@ Neo4j Graph Data Science (GDS) contains a set of graph algorithms, exposed throu
 
 This guide demonstrates the usual workflow for how to run production-tier algorithms.  The generalized workflow is as follows: 
 
-* How to create a graph projection (also referred to as an "in-memory graph")
-* How graph projections are used to run a graph algorithm with GDS
-* Examples of running a few graph algorithms and interpretation of their results
+* Create a graph projection
+* Run a graph algorithm on a projection
+* Show and interpret example results
 
 The official GDS documentation can be found link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[here^].
 
