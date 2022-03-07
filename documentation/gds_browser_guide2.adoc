@@ -459,7 +459,7 @@ We can also set a minimum similarity score:
 CALL gds.nodeSimilarity.stream(
     'routes',
     {
-        degreeCutoff: 25
+        similarityCutoff: 0.5
     }
 )
 YIELD node1, node2, similarity
