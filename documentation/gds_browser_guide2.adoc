@@ -196,18 +196,6 @@ CALL gds.graph.list('graph-name')
 
 where `graph-name` is the name of your projected, in-memory graph.
 
-
-== Graph catalog: dropping a graph
-
-Once you are done using a projected graph, it is beneficial to drop it from the catalog in order to free up memory space.  This can be achieved by using:
-
-[source,cypher]
-----
-CALL gds.graph.drop('graph-name')
-----
-
-where `graph-name` is the name of your projected, in-memory graph.
-
 == Algorithm syntax: available execution modes
 
 Once you have created a named graph projection, there are 4 different execution modes provided for each algorithm:
