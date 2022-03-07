@@ -11,15 +11,14 @@
 
 == Why Graphs for Data Science?
 
-Traditional data science and machine learning applications has relied on creating knowledge and understanding using columnar data.  Each row of data (or each data point) is treated as independent from the others.  However, there are many examples where considering the existing relationships between each data point can create more accurate models (see, for example, link:https://towardsdatascience.com/making-fastrp-graph-embeddings-work-for-you-f7344a535dc3[this blog post^]).  Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.  
+image:https://guides.neo4j.com/graph-data-science2/gds2_opening_image.png[role="left",width=150]
+
+Traditional data science and machine learning applications has relied on creating knowledge and understanding using columnar data.  Each row of data (or each data point) is treated as independent from the others.  However, there are many examples where considering the existing relationships between each data point can create more accurate models.  Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.  
 
 This guide will walk you through some of the common algorithms that can be used in graph data science.  In this guide, we will introduce you to how to use the Neo4j Graph Data Science library to solve some common data science problems using graphs.
 
 == Neo4j Graph Data Science
 
-//image::https://dist.neo4j.com/wp-content/uploads/20200407203334/graph-data-science.svg[float="left",width=300]
-
-image:https://guides.neo4j.com/graph-data-science2/gds2_opening_image.png[role="left",width=150]
 
 The Neo4j Graph Data Science (GDS) library contains a set of graph algorithms, exposed through Cypher procedures.  Graph algorithms provide insights into the graph structure and elements, for example, by computing centrality, similarity scores, and detecting communities.  The GDS library is divided into three tiers of maturity: product, beta, and alpha.
 
