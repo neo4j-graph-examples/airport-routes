@@ -29,7 +29,7 @@ This guide demonstrates the usual workflow for how to run production-tier algori
 * How graph projections are used to run a graph algorithm with GDS
 * Examples of running a few graph algorithms and interpretation of their results
 
-The official GDS library documentation can be found link:https://neo4j.com/docs/graph-data-science/current/[here^].
+The official GDS library documentation can be found link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[here^].
 
 == Graph Model
 
@@ -255,7 +255,7 @@ where `graph-name` is the name of your projected, in-memory graph.
 
 image:https://guides.neo4j.com/graph-data-science2/gds_algo_compatibility.png[role="left",width=300]
 
-Not all GDS algorithms will run on every type of graph projection.  Some algorithms prefer homogeneous to heterogeneous graphs.  Others will only work properly on undirected graphs.  Some will not work with relationships weights.  You should always consult the link:https://neo4j.com/docs/graph-data-science/current/[API docs^] for your chosen algorithm to verify what is required for your graph.
+Not all GDS algorithms will run on every type of graph projection.  Some algorithms prefer homogeneous to heterogeneous graphs.  Others will only work properly on undirected graphs.  Some will not work with relationships weights.  You should always consult the link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[API docs^] for your chosen algorithm to verify what is required for your graph.
 
 == Algorithm syntax: available execution modes
 
@@ -574,8 +574,8 @@ CALL gds.graph.drop('routes-weighted');
 
 == The end
 
-Congratulations!  You have taken your first steps into using the Neo4j Graph Data Science (GDS) library!  This tutorial just looked at the basics of how to run graph algorithms and demonstrated the approach on a very limited number of basic algorithms.  To learn more about what other algorithms exists as well as details for all of their configurations, please see link:https://neo4j.com/docs/graph-data-science/current/[the GDS documentation^].
+Congratulations!  You have taken your first steps into using the Neo4j Graph Data Science (GDS) library!  This tutorial just looked at the basics of how to run graph algorithms and demonstrated the approach on a very limited number of basic algorithms.  To learn more about what other algorithms exists as well as details for all of their configurations, please see link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[the GDS documentation^].
 
 === Next steps
 
-If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/aurads[AuraDS^]!
+If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/aurads/?ref=gds-sandbox[AuraDS^]!
