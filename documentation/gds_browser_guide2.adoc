@@ -60,7 +60,7 @@ Next we will import the Airport, Country, and Continent nodes and set their prop
 [source,cypher]
 ----
 WITH 
-    'https://raw.githubusercontent.com/cj2001/bite_sized_data_science/main/data/airport-node-list.csv'
+    'https://raw.githubusercontent.com/neo4j-graph-examples/graph-data-science2/main/data/airport-node-list.csv'
     AS url
 LOAD CSV WITH HEADERS FROM url AS row
 MERGE (a:Airport {iata: row.iata})
