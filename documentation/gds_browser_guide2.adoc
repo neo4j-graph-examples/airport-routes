@@ -208,12 +208,6 @@ CALL gds.graph.drop('graph-name')
 
 where `graph-name` is the name of your projected, in-memory graph.
 
-== Identifying appropriate algorithms for your graph
-
-image:https://guides.neo4j.com/graph-data-science2/gds_algo_compatibility.png[role="left",width=300]
-
-Not all GDS algorithms will run on every type of graph projection.  Some algorithms prefer homogeneous to heterogeneous graphs.  Others will only work properly on undirected graphs.  Some will not work with relationships weights.  You should always consult the link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[API docs^] for your chosen algorithm to verify what is required for your graph.
-
 == Algorithm syntax: available execution modes
 
 Once you have created a named graph projection, there are 4 different execution modes provided for each algorithm:
@@ -517,6 +511,13 @@ ORDER BY index
 ----
 
 We can see in the above query that we are specifying a source and target node and using the `relationshipWeightProperty` of `distance`.  From there, many things are returned, including the total cost (similar to distance, usually representing the straight-line distance between two nodes while ignoring other potential sources of delay such as time spent taxiing, etc.), and a listing of the airports along this path.  In this case, we see that the shortest path is 4 hops long -- perhaps not practical, but the total distance is minimized.
+
+== Identifying appropriate algorithms for your graph
+
+image:https://guides.neo4j.com/graph-data-science2/gds_algo_compatibility.png[role="left",width=300]
+
+Not all GDS algorithms will run on every type of graph projection.  Some algorithms prefer homogeneous to heterogeneous graphs.  Others will only work properly on undirected graphs.  Some will not work with relationships weights.  You should always consult the link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[API docs^] for your chosen algorithm to verify what is required for your graph.
+
 
 == Cleaning up
 
