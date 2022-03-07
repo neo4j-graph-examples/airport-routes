@@ -1,6 +1,6 @@
 :name: graph-data-science2
-:long-name: Graph Data Science 2
-:description: Leverage Neo4j Graph Data Science 2.0 library to explore graph algorithms for analytics and feature engineering.
+:long-name: Graph Data Science
+:description: Leverage Neo4j Graph Data Science library to explore graph algorithms for analytics and feature engineering.
 :icon: documentation/img/gds2_opening_image.png
 :tags: example-data,dataset,graph-data-science,graph-algorithms,graph-features
 :author: Clair Sullivan
