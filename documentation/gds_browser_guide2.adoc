@@ -181,7 +181,7 @@ This is a very simple graph projection, but it is possible to add multiple node 
 
 == Graph catalog: creating a graph with Cypher projections
 
-There are times where native projections are not expressive enough to capture exactly what you need in the graph.  In these cases, Cypher can be used to create the graph projection.  The overall syntax for this is:
+There are times where native projections are not expressive enough to capture exactly what you need in the graph. In these cases, Cypher can be used to create the graph projection. Instead of optimizing for scale and performance like the native projection, Cypher projections are specifically optimized for flexibility and customizability to support developmental analysis and experimentation on smaller subsets of the graph.  The overall syntax for this is:
 
 [source,cypher]
 ----
