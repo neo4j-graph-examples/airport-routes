@@ -48,11 +48,11 @@ We begin by creating uniqeness constraints on each of the nodes, which make for 
 
 [source,cypher]
 ----
-CREATE CONSTRAINT airports ON (a:Airport) ASSERT a.iata IS UNIQUE;
-CREATE CONSTRAINT cities ON (c:City) ASSERT c.name IS UNIQUE;
-CREATE CONSTRAINT regions ON (r:Region) ASSERT r.name IS UNIQUE;
-CREATE CONSTRAINT countries ON (c:Country) ASSERT c.code IS UNIQUE;
-CREATE CONSTRAINT continents ON (c:Continent) ASSERT c.code IS UNIQUE;
+CREATE CONSTRAINT airports IF NOT EXISTS ON (a:Airport) ASSERT a.iata IS UNIQUE;
+CREATE CONSTRAINT cities IF NOT EXISTS ON (c:City) ASSERT c.name IS UNIQUE;
+CREATE CONSTRAINT regions IF NOT EXISTS ON (r:Region) ASSERT r.name IS UNIQUE;
+CREATE CONSTRAINT countries IF NOT EXISTS ON (c:Country) ASSERT c.code IS UNIQUE;
+CREATE CONSTRAINT continents IF NOT EXISTS ON (c:Continent) ASSERT c.code IS UNIQUE;
 ----
 
 Next we will import the Airport, Country, and Continent nodes and set their properties as well as the `IN_CITY`, `IN_COUNTRY`, `IN_REGION` and `ON_CONTINENT` relationships.
