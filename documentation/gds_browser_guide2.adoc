@@ -311,7 +311,9 @@ As we can see, the results are identical to the streamed version.
 
 == Community (cluster) detection via Louvain Modularity
 
-As with centrality measurements, there are many ways to identify communities within a graph.  We will cover the popular Louvain Modularity method in this section.  This algorithm finds clusters within a graph by measuring the density of nodes.  This is quantified through the _modularity_, which is a comparison of the density of connections within a cluster to an average or random sample.  So the higher the modularity, the more dense the cluster is.  The Louvain method thus attempts to maximize the modularity across the graph through a recursive approach.  As with PageRank, in GDS the user can specify a maximum number of iterations as well as a tolerance factor for early termination.  Additionally, the algorithm is able to return the intermediate community assignments along the way to convergence.  
+As with centrality measurements, there are many ways to identify communities within a graph.  Community detection is a useful tool for identifying regions of a graph that are densely clustered.  For example, in our airport routes graph, it would help us find regions of the globe where airports have high travel rates between or where airports form natural clusters based on the density of airports in a region.  
+
+We will cover the popular Louvain Modularity method in this section.  This algorithm finds clusters within a graph by measuring the density of nodes.  This is quantified through the _modularity_, which is a comparison of the density of connections within a cluster to an average or random sample.  So the higher the modularity, the more dense the cluster is.  The Louvain method thus attempts to maximize the modularity across the graph through a recursive approach.  As with PageRank, in GDS the user can specify a maximum number of iterations as well as a tolerance factor for early termination.  Additionally, the algorithm is able to return the intermediate community assignments along the way to convergence.  
 
 == Louvain example graph
 
@@ -351,9 +353,11 @@ As before, should we wish to write these results as node properties, we can use 
 
 == Node similarity
 
-As with the previous algorithm categories of centrality and community detection, there are a variety of ways to calculate node similarity.  In general, node similarity is computed between pairs of nodes through different vector-based metrics.  In this section we will use a common approach to calculating pair-wise similarity that uses the link:https://en.wikipedia.org/wiki/Jaccard_index[Jaccard similarity score^].  
+As with the previous algorithm categories of centrality and community detection, there are various ways to calculate node similarity.  In general, node similarity is computed between pairs of nodes through different vector-based metrics.  This is useful for things like recommendation engines where you want to, for example, recommend similar objects to purchase based on a customer's previous purchases.  In this section we will use a common approach to calculating pair-wise similarity that uses the link:https://en.wikipedia.org/wiki/Jaccard_index[Jaccard similarity score^].  
 
-To implement this, GDS starts by considering all source nodes in the graph that have an outgoing relationship.  So suppose there is a relationship between node `n` and node `m`.  For each `(n, m)` pair, the algorithm obtains the set of all target nodes for both `n` and `m` and uses the sets of those to calculate the Jaccard similarity, which is the GDS node similarity score between the two nodes.
+Node similarity considers every relationships between every node.  If there is a relationship between nodes `n` and `m`, the algorithm then explores the other relationships individually of these two nodes. The percentage overlap in these individual sets is returned as the node similarity, where high similarities are near 1.0.
+
+// To implement this, GDS starts by considering all source nodes in the graph that have an outgoing relationship.  So suppose there is a relationship between node `n` and node `m`.  For each `(n, m)` pair, the algorithm obtains the set of all target nodes for both `n` and `m` and uses the sets of those to calculate the Jaccard similarity, which is the GDS node similarity score between the two nodes.
 
 It should be noted that running node similarity scales quadratically with the number of nodes in the graph.  To help minimize the run time, particularly on larger graphs, it is possible to set cutoffs on the degree of the nodes (the number of incoming or outgoing relationships) as well as a similarity cutoff.  This then reduces the number of pair-wise combinations that must be evaluated.  The result limits can either be set on the whole graph (referred to as `N` in the documentation) or to the results per node (referred to as `K` in the documentation).
 
