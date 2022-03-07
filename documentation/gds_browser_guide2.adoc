@@ -268,7 +268,7 @@ As previously stated, stream mode will output the results of the calculation wit
 ----
 CALL gds.pageRank.stream('routes')
 YIELD nodeId, score
-RETURN gds.util.asNode(nodeId).iata AS iata, score
+RETURN gds.util.asNode(nodeId).iata AS iata, gds.util.asNode(nodeId).descr AS description, score
 ORDER BY score DESC, iata ASC
 ----
 
