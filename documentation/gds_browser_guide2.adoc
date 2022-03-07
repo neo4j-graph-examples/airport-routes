@@ -303,7 +303,7 @@ We can then confirm the results using:
 [source,cypher]
 ----
 MATCH (a:Airport)
-RETURN a.iata, a.pagerank
+RETURN a.iata AS iata, a.descr AS description, a.pagerank AS pagerank
 ORDER BY a.pagerank DESC, a.iata ASC
 ----
 
