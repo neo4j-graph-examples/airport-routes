@@ -142,7 +142,6 @@ In this section we will explore how to project a graph using the native projecti
 
 Native projections provide the fastest performance for creating an graph projection.  They take 3 mandatory parameters: `graphName`, `nodeProjection`, and `relationshipProjection`.  There are also optional `configuration` parameters that can be used to further configure the graph.  In general, the syntax for creating a native projection is:
 
-[source,cypher]
 ----
 CALL gds.graph.project(
     graphName: String,
@@ -189,7 +188,6 @@ CALL gds.graph.list()
 
 You can also check this for an individual graph using:
 
-[source,cypher]
 ----
 CALL gds.graph.list('graph-name')
 ----
@@ -215,7 +213,6 @@ When it comes time for feature engineering, you will likely want to include some
 
 Utilizing one of the 4 different execution modes, the general way to call a graph algorithm is as follows:
 
-[source,cypher]
 ----
 CALL gds[.<tier>].<algorithm>.<execution-mode>[.<estimate>](
   graphName: String,
@@ -462,7 +459,7 @@ ORDER BY City1
 
 Like all of the other algorithm categories we have explored, there are several approaches possible for path finding.  Generally speaking, the purpose of path finding is to find the shortest path between two or more nodes.  In the case of our airport route graph, this would help us identify which airport connections would be required to minimize the overall flight distance. 
 
- In this section we will use the common link:https://en.wikipedia.org/wiki/Dijkstra's_algorithm[Dijkstra's algorithm^] to find the shortest path between two nodes.  Unlike the previous examples, we will need a weighted graph projection because Dijkstra's algorithm begins by finding the lowest weighted relationship from the source nodes to all nodes that are directly connected to it.  It then performs the same calculation from that node to all nodes connected to it, and so on, always choosing the relationship with the lowest weight, until the target node is reached.
+In this section we will use the common link:https://en.wikipedia.org/wiki/Dijkstra's_algorithm[Dijkstra's algorithm^] to find the shortest path between two nodes.  Unlike the previous examples, we will need a weighted graph projection because Dijkstra's algorithm begins by finding the lowest weighted relationship from the source nodes to all nodes that are directly connected to it.  It then performs the same calculation from that node to all nodes connected to it, and so on, always choosing the relationship with the lowest weight, until the target node is reached.
 
 == Creating a weighted graph projection
 
