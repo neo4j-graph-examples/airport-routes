@@ -13,7 +13,7 @@
 :target-db-version: 4.4
 // :bloom-perspective: bloom/graph-data-science.bloom-perspective
 :guide: documentation/graph-data-science2.neo4j-browser-guide
-:rendered-guide: https://guides.neo4j.com/graph-data-science2/gds_browser_guide2.html
+:rendered-guide: https://guides.neo4j.com/graph-data-science2/gds_browser_guide2_mar10.html
 :model: documentation/img/air_route_schema.png
 :example: documentation/img/example.png
 :nodes: 8627
