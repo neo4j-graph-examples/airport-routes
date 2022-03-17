@@ -255,9 +255,21 @@ There are many ways to determine the centrality or importance of a node, but one
 
 The algorithm itself is an iterative algorithm.  The number of iterations can be set as a configuration parameter in GDS, however the algorithm can terminate if the node scores converge based on a specified tolerance value, which is also configurable in GDS.
 
+== Centrality determined by node degree
+
+Prior to calculating the PageRank of each node, let's first explore the total number of flights into and out of each airport, which is the total degree for the `[:HAS_ROUTE]` relationship.  To do so, we can run the following query:
+
+[source,cypher]
+----
+MATCH (a:Airport)
+WITH a, SIZE((a)-[:HAS_ROUTE]-(:Airport)) AS degree
+RETURN a.city AS city, a.iata AS airport_code, degree
+ORDER BY degree DESC
+----
+
 == PageRank example graph
 
-We will utilize the `routes` graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:
+While node degree is a type of centrality, we will now calculate the PageRank of each node, which generally provides a more accurate representation of individual node centrality.  We will utilize the `routes` graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:
 
 [source,cypher]
 ----
