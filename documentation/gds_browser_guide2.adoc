@@ -111,15 +111,39 @@ CALL db.schema.visualization()
 
 Using this command, we can see our 5 different node and relationship types.
 
-== Summary statistics
+== Basic graph exploratory data analysis (EDA)
 
-Prior to using any of the GDS algorithms it can be beneficial to calculate some summary statistics on the data.  For example, the following calculate the minimum, maximum, average, and standard deviation of the number of flights out of each airport.
+Prior to using any of the GDS algorithms it can be beneficial to conduct some basic EDA and calculate some summary statistics on the data.  For example, to examine a few airport nodes within the graph and see what properties are associated with these nodes, we can run the following query:
+
+[source,cypher]
+----
+MATCH (a:Airport) RETURN a LIMIT 3
+----
+
+We can look at the distribution of the number of airports per continent by using this query:
+
+[source,cypher]
+----
+MATCH (c:Continent)
+return c.name AS continent_name, SIZE((:Airport)-[:ON_CONTINENT]->(c)) AS num_airports
+ORDER BY num_airports DESC
+----
+
+The following calculate the minimum, maximum, average, and standard deviation of the number of flights out of each airport.
 
 [source,cypher]
 ----
 MATCH (a:Airport)-[:HAS_ROUTE]->()
 WITH a, count(*) AS num
 RETURN min(num) AS min, max(num) AS max, avg(num) AS avg_routes, stdev(num) AS stdev
+----
+
+Similarly, we can obtain the statistics on the length of flights between airports:
+
+[source,cypher]
+----
+MATCH (:Airport)-[r:HAS_ROUTE]->(:Airport)
+RETURN min(r.distance) AS min, max(r.distance) AS max, avg(r.distance) AS avg_distance, stdev(r.distance) AS stdev
 ----
 
 // Note that we cannot repeat the same query as in the original browser guide because that
