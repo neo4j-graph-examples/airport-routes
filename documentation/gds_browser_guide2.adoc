@@ -269,17 +269,10 @@ ORDER BY degree DESC
 
 == PageRank example graph
 
-While node degree is a type of centrality, we will now calculate the PageRank of each node, which generally provides a more accurate representation of individual node centrality.  We will utilize the `routes` graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:
+While node degree is a type of centrality, we will now calculate the PageRank of each node, which generally provides a more accurate representation of individual node centrality.  We will utilize the `routes` graph projection that we wrote before.  If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.  Attempting to recreate a graph with the same name will result in the following error:
 
-[source,cypher]
 ----
-CALL gds.graph.project(
-    'routes',
-    'Airport',
-    'HAS_ROUTE'
-)
-YIELD
-    graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount
+Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgumentException: A graph with name 'routes' already exists.
 ----
 
 == PageRank: stream mode
@@ -339,17 +332,10 @@ We will cover the popular Louvain Modularity method in this section.  This algor
 
 == Louvain example graph
 
-We will utilize the `routes` graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:
+We will utilize the `routes` graph projection that we wrote before.  If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.  Attempting to recreate a graph with the same name will result in the following error:
 
-[source,cypher]
 ----
-CALL gds.graph.project(
-    'routes',
-    'Airport',
-    'HAS_ROUTE'
-)
-YIELD
-    graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount
+Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgumentException: A graph with name 'routes' already exists.
 ----
 
 == Louvain: example
@@ -383,17 +369,10 @@ It should be noted that running node similarity scales quadratically with the nu
 
 == Node similarity: example graph
 
-We will utilize the `routes` graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:
+We will utilize the `routes` graph projection that we wrote before.  If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.  Attempting to recreate a graph with the same name will result in the following error:
 
-[source,cypher]
 ----
-CALL gds.graph.project(
-    'routes',
-    'Airport',
-    'HAS_ROUTE'
-)
-YIELD
-    graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount
+Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgumentException: A graph with name 'routes' already exists.
 ----
 
 == Node similarity: simple example
