@@ -208,7 +208,7 @@ In addition to the above for modes, it is possible to use `estimate` to obtain a
 
 === A special note on `mutate` mode
 
-When it comes time for feature engineering, you will likely want to include some quantities calculated by GDS into your graph projection.  This is what `mutate` is for.  It does not change the database itself, but writes the results of the calculation to each node within the projected graph for future calculations.  It is beyond the scope of this guide, but is covered in more detail in link:https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/?ref=gds-sandbox#running-algos-mutate[the API docs^].
+When it comes time for feature engineering, you will likely want to include some quantities calculated by GDS into your graph projection.  This is what `mutate` is for.  It does not change the database itself, but writes the results of the calculation to each node within the projected graph for future calculations.  This behavior is useful for when you are using more complicated graph algorithms or pipelines.  However, it is beyond the scope of this guide, but is covered in more detail in link:https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/?ref=gds-sandbox#running-algos-mutate[the API docs^].
 
 == Algorithm syntax: general algorithm use
 
