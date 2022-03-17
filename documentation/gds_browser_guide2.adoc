@@ -186,10 +186,11 @@ It is helpful to know which graphs are in the catalog and their properties.  To 
 CALL gds.graph.list()
 ----
 
-You can also check this for an individual graph using:
+You can also check this for an individual graph.  For example, using the `routes` graph we just created above, we can check the existence of the graph using:
 
+[source,cypher]
 ----
-CALL gds.graph.list('graph-name')
+CALL gds.graph.list('routes')
 ----
 
 where `graph-name` is the name of your projected, in-memory graph.
