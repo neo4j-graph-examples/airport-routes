@@ -89,7 +89,7 @@ SET a.id = row.id,
     a.location = point({latitude: toFloat(row.lat), longitude: toFloat(row.lon)});
 ----
 
-Finally, we will import the `(Airport)-[:HAS_ROUTE]-(Airport)` relationship.  Note that relationship has a property of `distance`, indicating the distance between each of the airports.  We will later use this to create weighted graphs.
+Finally, we will import the `(Airport)-[:HAS_ROUTE]->(Airport)` relationship.  Note that relationship has a property of `distance`, indicating the distance between each of the airports.  We will later use this to create weighted graphs.
 
 [source,cypher]
 ----
