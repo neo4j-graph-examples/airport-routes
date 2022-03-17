@@ -502,6 +502,8 @@ ORDER BY index
 
 We can see in the above query that we are specifying a source and target node and using the `relationshipWeightProperty` of `distance`.  From there, many things are returned, including the total cost (similar to distance, usually representing the straight-line distance between two nodes while ignoring other potential sources of delay such as time spent taxiing, etc.), and a listing of the airports along this path.  In this case, we see that the shortest path is 4 hops long -- perhaps not practical, but the total distance is minimized.
 
+Give this a try with your favorite airports!
+
 == Identifying appropriate algorithms for your graph
 
 image:https://guides.neo4j.com/graph-data-science2/gds_algo_compatibility.png[role="left",width=300]
