@@ -1,0 +1,1032 @@
+<style type="text/css" media="screen">
+/*
+.nodes-image {
+	margin:-100;
+}
+*/	
+@import url("//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css");
+
+.imageblock .content img, .image img {max-width: 900px;max-height: 300px;}
+.deck h3, .deck h4 {display: block !important;margin-bottom:8px;margin-top:5px;}
+.listingblock {margin:8px;}
+.pull-bottom {position:relative;bottom:1em;}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning:before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution:before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important:before{content:"\f06a";color:#bf0000}
+.admonitionblock.note.speaker { display:none; }
+</style>
+<style type="text/css" media="screen">
+/* #editor.maximize-editor .CodeMirror-code { font-size:24px; line-height:26px; } */
+</style>
+<article class="guide" ng-controller="AdLibDataController">
+  <carousel class="deck container-fluid">
+    <!--slide class="row-fluid">
+      <div class="col-sm-3">
+        <h3>Graph Algorithms</h3>
+        <p class="lead">Information</p>
+			<!dl>
+				
+				
+				
+				
+				
+			</dl>
+		</div>
+      <div class="col-sm-9">
+        <figure>
+          <img style="width:300px" src=""/>
+        </figure>
+      </div>
+    </slide-->
+    
+
+
+   <h4>Graph Algorithms</h4>
+   
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Why Graphs for Data Science?</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Traditional data science and machine learning applications has relied on creating knowledge and understanding using columnar data.  Each row of data (or each data point) is treated as independent from the others.  However, there are many examples where considering the existing relationships between each data point can create more accurate models (see, for example, <a href="https://towardsdatascience.com/making-fastrp-graph-embeddings-work-for-you-f7344a535dc3" target="_blank">this blog post</a>).  Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.</p>
+</div>
+<div class="paragraph">
+<p>This guide will walk you through some of the common algorithms that can be used in graph data science.  In this guide, we will introduce you to how to use the Neo4j Graph Data Science library to solve some common data science problems using graphs.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Neo4j Graph Data Science</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p><span class="image left"><img src="https://guides.neo4j.com/graph-data-science2/gds2_opening_image.png" alt="gds2 opening image" width="150"></span></p>
+</div>
+<div class="paragraph">
+<p>The Neo4j Graph Data Science (GDS) library contains a set of graph algorithms, exposed through Cypher procedures.  Graph algorithms provide insights into the graph structure and elements, for example, by computing centrality, similarity scores, and detecting communities.  The GDS library is divided into three tiers of maturity: product, beta, and alpha.</p>
+</div>
+<div class="paragraph">
+<p>This guide demonstrates the usual workflow for how to run production-tier algorithms.  The generalized workflow is as follows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How to create a graph projection (also referred to as an "in-memory graph")</p>
+</li>
+<li>
+<p>How graph projections are used to run a graph algorithm with GDS</p>
+</li>
+<li>
+<p>Examples of running a few graph algorithms and interpretation of their results</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The official GDS library documentation can be found <a href="https://neo4j.com/docs/graph-data-science/current/" target="_blank">here</a>.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Graph Model</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Before you run any of the algorithms, you need to import your data.  We will be working with an example dataset that shows the connections between different airports across the world. Note that we have 5 different node labels (<code>Airport</code>, <code>City</code>, <code>Country</code>, <code>Continent</code>, and <code>Region</code>) and 5 different relationship types (<code>:HAS_ROUTE</code>, <code>:IN_CITY</code>, <code>:IN_COUNTRY</code>, <code>:IN_REGION</code>, and <code>:ON_CONTINENT</code>).</p>
+</div>
+<div class="imageblock" style="float: right;">
+<div class="content">
+<img src="https://guides.neo4j.com/graph-data-science2/air_route_schema.png" alt="air route schema" width="300">
+</div>
+</div>
+
+
+
+   <h4>Attribution</h4>
+   <div class="paragraph">
+<p>This dataset was initially created by Kelvin Lawrence, available under the Apache License Version 2.0.  The original dataset can be found <a href="https://github.com/krlawrence/graph">GitHub repository</a> and has been modified for the purposes of this guide.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Loading the data</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>We will use the Cypher command <code>LOAD CSV</code> to import our data into Neo4j from CSV file hosted on GitHub.  It will parse a CSV file line by line as objects that can then be manipulated using Cypher.</p>
+</div>
+<div class="paragraph">
+<p>We begin by creating uniqeness constraints on each of the nodes, which make for efficient queries.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CREATE CONSTRAINT airports ON (a:Airport) ASSERT a.iata IS UNIQUE;
+CREATE CONSTRAINT cities ON (c:City) ASSERT c.name IS UNIQUE;
+CREATE CONSTRAINT regions ON (r:Region) ASSERT r.name IS UNIQUE;
+CREATE CONSTRAINT countries ON (c:Country) ASSERT c.code IS UNIQUE;
+CREATE CONSTRAINT continents ON (c:Continent) ASSERT c.code IS UNIQUE;<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Next we will import the Airport, Country, and Continent nodes and set their properties as well as the <code>IN_CITY</code>, <code>IN_COUNTRY</code>, <code>IN_REGION</code> and <code>ON_CONTINENT</code> relationships.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->WITH
+    'https://raw.githubusercontent.com/cj2001/bite_sized_data_science/main/data/airport-node-list.csv'
+    AS url
+LOAD CSV WITH HEADERS FROM url AS row
+MERGE (a:Airport {iata: row.iata})
+MERGE (ci:City {name: row.city})
+MERGE (r:Region {name: row.region})
+MERGE (co:Country {code: row.country})
+MERGE (con:Continent {code: row.continent})
+MERGE (a)-[:IN_CITY]-&gt;(ci)
+MERGE (a)-[:IN_COUNTRY]-&gt;(co)
+MERGE (ci)-[:IN_COUNTRY]-&gt;(co)
+MERGE (r)-[:IN_COUNTRY]-&gt;(co)
+MERGE (a)-[:IN_REGION]-&gt;(r)
+MERGE (ci)-[:IN_REGION]-&gt;(r)
+MERGE (a)-[:ON_CONTINENT]-&gt;(con)
+MERGE (ci)-[:ON_CONTINENT]-&gt;(con)
+MERGE (co)-[:ON_CONTINENT]-&gt;(con)
+MERGE (r)-[:ON_CONTINENT]-&gt;(con)
+SET a.id = row.id,
+    a.icao = row.icao,
+    a.city = row.city,
+    a.descr = row.descr,
+    a.runways = toInteger(row.runways),
+    a.longest = toInteger(row.longest),
+    a.altitude = toInteger(row.altitude),
+    a.lat = toFloat(row.lat),
+    a.lon = toFloat(row.lon);<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, we will import the <code>(Airport)-[:HAS_ROUTE]-(Airport)</code> relationship.  Note that relationship has a property of <code>distance</code>, indicating the distance between each of the airports.  We will later use this to create weighted graphs.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/cj2001/bite_sized_data_science/main/data/iroutes-edges.csv' AS row
+MATCH (source:Airport {iata: row.src})
+MATCH (target:Airport {iata: row.dest})
+MERGE (source)-[r:HAS_ROUTE]-&gt;(target)
+ON CREATE SET r.distance = toInteger(row.dist);<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Data visualization</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Prior to running some algorithms, it is helpful to visualize our data.  In order to do so, running the following query, which will give you the schema of the graph:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL db.schema.visualization()<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using this command, we can see our 5 different node and relationship types.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Summary statistics</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Prior to using any of the GDS algorithms it can be beneficial to calculate some summary statistics on the data.  For example, the following calculate the minimum, maximum, average, and standard deviation of the number of flights out of each airport.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->MATCH (a:Airport)-[:HAS_ROUTE]-&gt;()
+WITH a, count(*) AS num
+RETURN min(num) AS min, max(num) AS max, avg(num) AS avg_routes, stdev(num) AS stdev<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Graph creation</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>The first step in executing any GDS algorithm is to create a graph projection (also referred to as an in-memory graph) under a user-defined name.  Graph projections are subsets of our full graph to be used in calculating results through the GDS algorithms.  Their use enables GDS to run quickly and efficiently through the calculations.  In the creation of these projections, the nature of the graph elements may change in the following ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nodes and relationship types might be renamed</p>
+</li>
+<li>
+<p>Several node or relationship types might be merged</p>
+</li>
+<li>
+<p>The direction of relationships might be changed</p>
+</li>
+<li>
+<p>Parallel relationships might be aggregated</p>
+</li>
+<li>
+<p>Relationships might be derived from larger patterns</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Graph projections can be created through one of two methods: native projections and Cypher projections.  These graph projections are then stored in the graph catalog under a user-defined name.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Graph catalog: creating a graph with native projections</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Native projections provide the fastest performance for creating an graph projection.  They take 3 mandatory arguments: <code>graphName</code>, 'nodeProjection', and 'relationshipProjection'.  There are also optional <code>configuration</code> parameters that can be used to further configure the graph.  In general, the syntax for creating a native projection is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project(
+    graphName: String,
+    nodeProjection: String or List or Map,
+    relationshipProjection: String or List or Map,
+    configuration: Map
+)
+YIELD
+  graphName: String,
+  nodeProjection: Map,
+  nodeCount: Integer,
+  relationshipProjection: Map,
+  relationshipCount: Integer,
+  projectMillis: Integer,
+  createMillis: Integer<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Example of a native projection</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>In our dataset, we could create a graph projection of the routes between all airports as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project(
+    'routes',
+    'Airport',
+    'HAS_ROUTE'
+)
+YIELD
+    graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is a very simple graph projection, but it is possible to add multiple node types and relationship types as well as properties for each of the nodes and relationships.  To see more examples of creating native graph projections, consult the <a href="https://neo4j.com/docs/graph-data-science/current/graph-project/#graph-project-examples" target="_blank">GDS documentation</a>.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Graph catalog: creating a graph with Cypher projections</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>There are times where native projections are not expressive enough to capture exactly what you need in the graph.  In these cases, Cypher can be used to create the graph projection.  The overall syntax for this is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project.cypher(
+    graphName: String,
+    nodeQuery: String,
+    relationshipQuery: String,
+    configuration: Map
+) YIELD
+    graphName: String,
+    nodeQuery: String,
+    nodeCount: Integer,
+    relationshipQuery: String,
+    relationshipCount: Integer,
+    projectMillis: Integer,
+    createMillis: Integer<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The difference between this and the native projection is that the node and relationships projections are replaced with Cypher statements.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Example of a Cypher projection</h3>
+    <br/>
+    <div>
+      <div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project.cypher(
+    'routes-cypher',
+    'MATCH (a:Airport) RETURN id(a) AS id',
+    'MATCH (a1:Airport)-[:HAS_ROUTE]-&gt;(a2:Airport) RETURN id(a1) AS source, id(a2) AS target'
+)
+YIELD
+    graphName, nodeCount, relationshipCount<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can see here that Cypher projections work with the internal <code>id</code> of each node, which is returned in the node query and then used in the relationship query.  Note that GDS requires the specification of the <code>source</code> and <code>target</code> nodes in the relationship query.</p>
+</div>
+<div class="paragraph">
+<p>By using Cypher projections, we can specify many things, such as requirements on the node and relationship properties and more sophisticated relationships.  To see more examples of creating Cypher graph projections, consult the <a href="https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/#graph-project-examples" target="_blank">GDS documentation</a>.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Graph catalog: listing and existence</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>It is helpful to know which graphs are in the catalog and their properties.  To see this for all graphs, you use</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.list()<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also check this for an individual graph using:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.list('graph-name')<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>where <code>graph-name</code> is the name of your projected, in-memory graph.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Graph catalog: dropping a graph</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Once you are done using a projected graph, it is beneficial to drop it from the catalog in order to free up memory space.  This can be achieved by using:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.drop('graph-name')<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>where <code>graph-name</code> is the name of your projected, in-memory graph.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Identifying appropriate algorithms for your graph</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p><span class="image left"><img src="https://guides.neo4j.com/graph-data-science2/gds_algo_compatibility.png" alt="gds algo compatibility" width="300"></span></p>
+</div>
+<div class="paragraph">
+<p>Not all GDS algorithms will run on every type of graph projection.  Some algorithms prefer homogeneous to heterogeneous graphs.  Others will only work properly on undirected graphs.  Some will not work with relationships weights.  You should always consult the <a href="https://neo4j.com/docs/graph-data-science/current/" target="_blank">API docs</a> for your chosen algorithm to verify what is required for your graph.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Algorithm syntax: available execution modes</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Once you have created a named graph projection, there are 4 different execution modes provided for each algorithm:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>stream</code>: Returns the results of the algorithm as a stream of records without altering the database</p>
+</li>
+<li>
+<p><code>write</code>: Writes the results of the algorithm to the Neo4j database and returns a single record of summary statistics</p>
+</li>
+<li>
+<p><code>mutate</code>: Writes the results of the algorithm to the projected graph and returns a single record of summary statistics</p>
+</li>
+<li>
+<p><code>stats</code>: Returns a single record of summary statistics but does not write to either the Neo4j database or the projected graph</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In addition to the above for modes, it is possible to use <code>estimate</code> to obtain an estimation of how much memory a given algorithm will use.</p>
+</div>
+
+
+
+   <h4>A special note on <code>mutate</code> mode</h4>
+   <div class="paragraph">
+<p>When it comes time for feature engineering, you will likely want to include some quantities calculated by GDS into your graph projection.  This is what <code>mutate</code> is for.  It does not change the database itself, but writes the results of the calculation to each node within the projected graph for future calculations.  It is beyond the scope of this guide, but is covered in more detail in <a href="https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/#running-algos-mutate" target="_blank">the API docs</a>.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Algorithm syntax: general algorithm use</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Utilizing one of the 4 different execution modes, the general way to call a graph algorithm is as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds[.&lt;tier&gt;].&lt;algorithm&gt;.&lt;execution-mode&gt;[.&lt;estimate&gt;](
+  graphName: String,
+  configuration: Map
+)<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>where items in <code>[]</code> are optional. <code>&lt;tier&gt;</code>, if present, indicates whether the algorithm is in the alpha or beta tier (production-tiered algorithms do not use this), <code>&lt;algorithm&gt;</code> is the name of the algorithm, <code>&lt;execution-mode&gt;</code> is one of the 4 execution modes, and <code>&lt;estimate&gt;</code> is an optional flag indicating that the estimate of memory usage should be returned.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Interpretting results of an algorithm</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>GDS uses an internal <code>id</code> space for its calculations, which does not correspond to recognizable information of the graph itself.  As such, when we return results from an algorithm, it is returned in the <code>id</code> space.  We generally want to convert this to something coresponding to our actual graph.  To do so, we use the built in method:</p>
+</div>
+<div class="paragraph">
+<p><code>gds.util.asNode(nodeId).property_name AS property_name</code></p>
+</div>
+<div class="paragraph">
+<p>which will extract the desired <code>property_name</code> from the graph projection based on the <code>id</code> space.  We will see examples of this shortly.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Centrality measurements via PageRank</h3>
+    <br/>
+    <div>
+      <div class="imageblock" style="float: right;">
+<div class="content">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/758px-PageRanks-Example.svg.png" alt="758px PageRanks Example.svg" width="300">
+</div>
+</div>
+<div class="paragraph">
+<p>There are many ways to determine the centrality or importance of a node, but one of the most popular is through the calculation of PageRank.  PageRank measures the transitive (or directional) influence of a node.  The benefit to this approach is that it uses the influence of a node&#8217;s neighbors to determine the influence of the target node.  The general idea is that a node that has more incoming and more influential links from other nodes is considered to be more important (i.e. a higher PageRank).</p>
+</div>
+<div class="paragraph">
+<p>The algorithm itself is an iterative algorithm.  The number of iterations can be set as a configuration parameter in GDS, however the algorithm can terminate if the node scores converge based on a specified tolerance value, which is also configurable in GDS.</p>
+</div>
+<div class="paragraph">
+<p>PageRank can be run on a basic graph, such as what we are using here, or with a weighted graph.  To see how to run it on a weighted graph, please explore the <a href="https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/#algorithms-page-rank-examples-weighted" target="_blank">GDS documentation</a>.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>PageRank example graph</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>We will utilize the <code>routes</code> graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project(
+    'routes',
+    'Airport',
+    'HAS_ROUTE'
+)
+YIELD
+    graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>PageRank: stream mode</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>As previously stated, stream mode will output the results of the calculation without altering the database or the graph projection.  To do so, we use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.pageRank.stream('routes')
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).iata AS iata, score
+ORDER BY score DESC, iata ASC<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here we see that we have returned the results of the calculation, mapped in the internal <code>id</code> space, as well as the PageRank score.  We then extract the <code>iata</code> code of the airport from the <code>id</code> space using <code>gds.util.asNode()</code>.  We can see that the output is the airport codes, ordered by decreasing PageRank score.  The airports with the highest PageRank scores are very popular airports around the globe, as we would expect.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>PageRank: write mode</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>If we want to attach the results of the PageRank calculation as a node property to each node in the graph, we would use <code>.write()</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.pageRank.write('routes',
+    {
+        writeProperty: 'pagerank'
+    }
+)
+YIELD nodePropertiesWritten, ranIterations<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can then confirm the results using:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->MATCH (a:Airport)
+RETURN a.iata, a.pagerank
+ORDER BY a.pagerank DESC, a.iata ASC<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As we can see, the results are identical to the streamed version.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Community (cluster) detection via Louvain Modularity</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>As with centrality measurements, there are many ways to identify communities within a graph.  We will cover the popular Louvain Modularity method in this section.  This algorithm finds clusters within a graph by measuring the density of nodes.  This is quantified through the <em>modularity</em>, which is a comparison of the density of connections within a cluster to an average or random sample.  So the higher the modularity, the more dense the cluster is.  The Louvain method thus attempts to maximize the modularity across the graph through a recursive approach.  As with PageRank, in GDS the user can specify a maximum number of iterations as well as a tolerance factor for early termination.  Additionally, the algorithm is able to return the intermediate community assignments along the way to convergence.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Louvain example graph</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>We will utilize the <code>routes</code> graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project(
+    'routes',
+    'Airport',
+    'HAS_ROUTE'
+)
+YIELD
+    graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Louvain: example</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Using the stream mode, let&#8217;s explore the results of the algorithm.  We will use the following query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.louvain.stream('routes')
+YIELD nodeId, communityId
+RETURN
+	communityId,
+    SIZE(COLLECT(gds.util.asNode(nodeId).iata)) AS number_of_airports,
+	COLLECT(gds.util.asNode(nodeId).city) AS city
+ORDER BY number_of_airports DESC, communityId;<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case we have obtained the community IDs and counted the number of airports, by <code>iata</code> code, in each community using the combination of <code>COLLECT</code>, which creates a list of the results, and <code>SIZE</code>, which returns the size of a list.  We also return a list of the cities in each community.</p>
+</div>
+<div class="paragraph">
+<p>Exploring this list, we can see that the largest community corresponds to airports in the United States, the second largest to airports in Europe, and so on.  At surface inspection, these results make sense in that the airports in the graph appear to be clustered based on continent.</p>
+</div>
+<div class="paragraph">
+<p>As before, should we wish to write these results as node properties, we can use <code>gds.louvain.write()</code>.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Node similarity</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>As with the previous algorithm categories of centrality and community detection, there are a variety of ways to calculate node similarity.  In general, node similarity is computed between pairs of nodes through different vector-based metrics.  In this section we will use a common approach to calculating pair-wise similarity that uses the <a href="https://en.wikipedia.org/wiki/Jaccard_index" target="_blank">Jaccard similarity score</a>.</p>
+</div>
+<div class="paragraph">
+<p>To implement this, GDS starts by considering all source nodes in the graph that have an outgoing relationship.  So suppose there is a relationship between node <code>n</code> and node <code>m</code>.  For each <code>(n, m)</code> pair, the algorithm obtains the set of all target nodes for both <code>n</code> and <code>m</code> and uses the sets of those to calculate the Jaccard similarity, which is the GDS node similarity score between the two nodes.</p>
+</div>
+<div class="paragraph">
+<p>It should be noted that running node similarity scales quadratically with the number of nodes in the graph.  To help minimize the run time, particularly on larger graphs, it is possible to set cutoffs on the degree of the nodes (the number of incoming or outgoing relationships) as well as a similarity cutoff.  This then reduces the number of pair-wise combinations that must be evaluated.  The result limits can either be set on the whole graph (referred to as <code>N</code> in the documentation) or to the results per node (referred to as <code>K</code> in the documentation).</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Node similarity: example graph</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>We will utilize the <code>routes</code> graph projection that we wrote before.  If you need to recreate that graph projection, you can do so with the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project(
+    'routes',
+    'Airport',
+    'HAS_ROUTE'
+)
+YIELD
+    graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Node similarity: simple example</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Let&#8217;s look at an example of a very basic node similarity calculation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.nodeSimilarity.stream('routes')
+YIELD node1, node2, similarity
+RETURN
+    gds.util.asNode(node1).city AS City1,
+    COLLECT(gds.util.asNode(node2).city) AS City2,
+    COLLECT(similarity) AS similarity
+ORDER BY City1<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We see that the algorithm has returned the top 10 most similar nodes for each airport node in the graph.  What has happened here behind the scenes is that GDS has limited, on a per node basis (<code>K</code>), the number of results being returned, established by the configuration parameter <code>topK</code>, which has a default value of 10.  We could restrict this further by altering the above query as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.nodeSimilarity.stream(
+    'routes',
+    {
+        topK: 3
+    }
+)
+YIELD node1, node2, similarity
+RETURN
+    gds.util.asNode(node1).city AS City1,
+    COLLECT(gds.util.asNode(node2).city) AS City2,
+    COLLECT(similarity) AS similarity
+ORDER BY City1<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Node similarity: topN and bottomN</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>As previously stated, we can limit the number of similarity scores across all nodes by specifying <code>topN</code>, the largest overall similarity scores in the graph.  As example of this would be:author:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.nodeSimilarity.stream(
+    'routes',
+    {
+        topK: 1,
+        topN: 10
+    }
+)
+YIELD node1, node2, similarity
+RETURN
+    gds.util.asNode(node1).city AS City1,
+    COLLECT(gds.util.asNode(node2).city) AS City2,
+    COLLECT(similarity) AS similarity
+ORDER BY City1<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this case, we have calculated the airport with the highest similarity for each node (<code>topK: 1</code>) and then returned the 10 airport pairs with the highest similarity across the whole graph (<code>topN: 10</code>).</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Node similarity: degree and similarity cutoff</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Other ways of limiting the number of calculations done include by providing a minimum value of degree for a node to be considered in the overall calculations, such as below where we require a minimum degree of 100 (i.e. a minimum of 100 flights coming in to and out of an airport):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.nodeSimilarity.stream(
+    'routes',
+    {
+        degreeCutoff: 100
+    }
+)
+YIELD node1, node2, similarity
+RETURN
+    gds.util.asNode(node1).city AS City1,
+    COLLECT(gds.util.asNode(node2).city) AS City2,
+    COLLECT(similarity) AS similarity
+ORDER BY City1<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can also set a minimum similarity score:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.nodeSimilarity.stream(
+    'routes',
+    {
+        degreeCutoff: 25
+    }
+)
+YIELD node1, node2, similarity
+RETURN
+    gds.util.asNode(node1).city AS City1,
+    COLLECT(gds.util.asNode(node2).city) AS City2,
+    COLLECT(similarity) AS similarity
+ORDER BY City1<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Path Finding</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Like all of the other algorithm categories we have explored, there are several approaches possible for path finding.  Generally speaking, the purpose of path finding is to find the shortest path between two or more nodes.  In this section we will use the common <a href="https://en.wikipedia.org/wiki/Dijkstra&#8217;s_algorithm" target="_blank">Dijkstra&#8217;s algorithm</a> to find the shortest path between two nodes.  Unlike the previous examples, we will need a weighted graph projection because Dijkstra&#8217;s algorithm begins by finding the lowest weighted relationship from the source nodes to all nodes that are directly connected to it.  It then performs the same calculation from that node to all nodes connected to it, and so on, always choosing the relationship with the lowest weight, until the target node is reached.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Creating a weighted graph projection</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>In our previous examples we did not consider the distance between the two airports, which we will use for calculating shortest paths based on distance.  We need to begin by creating a graph projection using the distance as the weight of the relationship between two nodes.  In order to create a graph identical to our previous one with the simple addition of relationship weights, we would use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.project(
+    'routes-weighted',
+    'Airport',
+    'HAS_ROUTE',
+        {
+            relationshipProperties: 'distance'
+        }
+)<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Dijkstra&#8217;s algorithm: calculating the shortest path given a source node</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Let&#8217;s calculate the shortest distance from the Denver International Airport (DEN) to the Malé International Airport (MLE) using our weighted graph projection:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->MATCH (source:Airport {iata: 'DEN'}), (target:Airport {iata: 'MLE'})
+CALL gds.shortestPath.dijkstra.stream('routes-weighted', {
+    sourceNode: source,
+    targetNode: target,
+    relationshipWeightProperty: 'distance'
+})
+YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs, path
+RETURN
+    index,
+    gds.util.asNode(sourceNode).iata AS sourceNodeName,
+    gds.util.asNode(targetNode).iata AS targetNodeName,
+    totalCost,
+    [nodeId IN nodeIds | gds.util.asNode(nodeId).iata] AS nodeNames,
+    costs,
+    nodes(path) as path
+ORDER BY index<!--/code--></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We can see in the above query that we are specifying a source and target node and using the <code>relationshipWeightProperty</code> of <code>distance</code>.  From there, many things are returned, including the total cost (similar to distance, usually representing the straight-line distance between two nodes while ignoring other potential sources of delay such as time spent taxiing, etc.), and a listing of the airports along this path.  In this case, we see that the shortest path is 4 hops long&#8201;&#8212;&#8201;perhaps not practical, but the total distance is minimized.</p>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>Cleaning up</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>To free up memory, do not forget to drop your unused graph projections!</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre mode="cypher"  class="highlight pre-scrollable programlisting cm-s-neo code runnable standalone-example ng-binding" data-lang="cypher" lang="cypher"><!--code class="cypher language-cypher"-->CALL gds.graph.drop('routes');
+CALL gds.graph.drop('routes-cypher');
+CALL gds.graph.drop('routes-weighted');<!--/code--></pre>
+</div>
+</div>
+	</div>
+  </div>
+</slide>
+
+
+
+<slide class="row-fluid">
+  <div class="col-sm-12">
+    <h3>The end</h3>
+    <br/>
+    <div>
+      <div class="paragraph">
+<p>Congratulations!  You have taken your first steps into using the Neo4j Graph Data Science (GDS) library!  This tutorial just looked at the basics of how to run graph algorithms and demonstrated the approach on a very limited number of basic algorithms.  To learn more about what other algorithms exists as well as details for all of their configurations, please see <a href="https://neo4j.com/docs/graph-data-science/current/" target="_blank">the GDS documentation</a>.</p>
+</div>
+
+
+
+   <h4>Next steps</h4>
+   <div class="paragraph">
+<p>If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out <a href="https://neo4j.com/cloud/aurads" target="_blank">AuraDS</a>!</p>
+</div>
+	</div>
+  </div>
+</slide>
+  </carousel>
+</article>
