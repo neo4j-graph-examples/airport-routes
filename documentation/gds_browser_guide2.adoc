@@ -53,7 +53,7 @@ CREATE CONSTRAINT cities IF NOT EXISTS ON (c:City) ASSERT c.name IS UNIQUE;
 CREATE CONSTRAINT regions IF NOT EXISTS ON (r:Region) ASSERT r.name IS UNIQUE;
 CREATE CONSTRAINT countries IF NOT EXISTS ON (c:Country) ASSERT c.code IS UNIQUE;
 CREATE CONSTRAINT continents IF NOT EXISTS ON (c:Continent) ASSERT c.code IS UNIQUE;
-CREATE INDEX IF NOT EXISTS :Airport(location);
+CREATE INDEX locations IF NOT EXISTS FOR (air:Airport) ON (air.location);
 ----
 
 Next we will import the Airport, Country, and Continent nodes and set their properties as well as the `IN_CITY`, `IN_COUNTRY`, `IN_REGION` and `ON_CONTINENT` relationships.
