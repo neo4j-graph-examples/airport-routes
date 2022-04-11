@@ -38,7 +38,7 @@ image::https://guides.neo4j.com/graph-data-science2/graph_model.png[float="right
 
 === Attribution
 
-This dataset was initially created by Kelvin Lawrence, available under the Apache License Version 2.0.  The original dataset can be found https://github.com/krlawrence/graph[GitHub repository] and has been modified for the purposes of this guide.
+This dataset was initially created by Kelvin Lawrence, available under the Apache License Version 2.0.  The original dataset can be found https://github.com/krlawrence/graph[GitHub repository^] and has been modified for the purposes of this guide.
 
 == Loading the data
 
