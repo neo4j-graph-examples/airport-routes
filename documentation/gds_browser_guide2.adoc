@@ -7,23 +7,30 @@
 
 // Notes
 //
-// - Many doc links will not work yet, particularly on 2.0-specific content.  These should work once the
+// - Many doc links will not work yet, particularly on 2.0-specific content.
+These should work once the
 //   2.0 preview docs go live.
 
 == Why Graphs for Data Science?
 
 image:https://guides.neo4j.com/graph-data-science2/gds2_opening_image.png[role="left",width=150]
 
-Traditional data science and machine learning applications have relied on creating knowledge and understanding using columnar data.  Each row of data (or each data point) is treated as being independent of the others.  However, there are many examples where considering the existing relationships between each data point can create better models.  Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.
+Traditional data science and machine learning applications have relied on creating knowledge and understanding using columnar data.
+Each row of data (or each data point) is treated as being independent of the others.
+However, there are many examples where considering the existing relationships between each data point can create better models.
+Such examples include social network analysis, recommender systems, fraud detection, search, and question-answering bots.
 
-This guide will walk you through some of the common algorithms that can be used in graph data science.  In this guide, we will introduce you to how to use Neo4j Graph Data Science (GDS) to solve some common data science problems using graphs.
+This guide will walk you through some of the common algorithms that can be used in graph data science.
+In this guide, we will introduce you to how to use Neo4j Graph Data Science (GDS) to solve some common data science problems using graphs.
 
 == Neo4j Graph Data Science
 
 
-Neo4j Graph Data Science (GDS) contains a set of graph algorithms, exposed through Cypher procedures.  Graph algorithms provide insights into the graph structure and elements, for example, by computing centrality, similarity scores, and detecting communities.  
+Neo4j Graph Data Science (GDS) contains a set of graph algorithms, exposed through Cypher procedures.
+Graph algorithms provide insights into the graph structure and elements, for example, by computing centrality, similarity scores, and detecting communities.  
 
-This guide demonstrates the usual workflow for how to run production-tier algorithms.  The generalized workflow is as follows: 
+This guide demonstrates the usual workflow for how to run production-tier algorithms.
+The generalized workflow is as follows: 
 
 * Create a graph projection
 * Run a graph algorithm on a projection
@@ -32,23 +39,31 @@ This guide demonstrates the usual workflow for how to run production-tier algori
 The official GDS documentation can be found link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[here^].
 
 == Graph model: airplane routes
+
 image::https://guides.neo4j.com/graph-data-science2/pascal-meier-UYiesSO4FiM-unsplash-croped.jpg[width=65000000000, title=Photo by link:https://unsplash.com/@zhpix?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText[Pascal Meier^] on link:https://unsplash.com/s/photos/airport?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText[Unsplash^]]
-//image::http://localhost:8001/img/pascal-meier-UYiesSO4FiM-unsplash-croped.jpg[width=65000000000, title=Photo by link:https://unsplash.com/@zhpix?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText[Pascal Meier^] on link:https://unsplash.com/s/photos/airport?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText[Unsplash^]]
 
-image::https://guides.neo4j.com/graph-data-science2/graph_model2.png[float="right", 650]
-//image:http://localhost:8001/img/graph_model2.png[float="right", 650]
 
-Before you run any of the algorithms, you need to import your data.  We will be working with an example dataset that shows the connections between different airports across the world. Note that we have 5 different node labels (`Airport`, `City`, `Country`, `Continent`, and `Region`) and 5 different relationship types (`:HAS_ROUTE`, `:IN_CITY`, `:IN_COUNTRY`, `:IN_REGION`, and `:ON_CONTINENT`).
+We will be working with an example dataset that shows the connections between different airports across the world. 
+Note that we have 5 different node labels (`Airport`, `City`, `Country`, `Continent`, and `Region`) and 5 different relationship types (`:HAS_ROUTE`, `:IN_CITY`, `:IN_COUNTRY`, `:IN_REGION`, and `:ON_CONTINENT`).
+
+image::https://guides.neo4j.com/graph-data-science2/graph_model2.png[]
 
 === Attribution
 
-This dataset was initially created by Kelvin Lawrence, available under the Apache License Version 2.0.  The original dataset can be found in https://github.com/krlawrence/graph[this GitHub repository^] and has been modified for the purposes of this guide.
+This dataset was initially created by Kelvin Lawrence, available under the Apache License Version 2.0.  
+The original dataset can be found in https://github.com/krlawrence/graph[this GitHub repository^] and has been modified for the purposes of this guide.
+
+ifndef::env-guide[]
 
 == Loading the data
 
-We will use the Cypher command `LOAD CSV` to import our data into Neo4j from CSV files hosted on GitHub.  It will parse the CSV files line by line as objects that can then be manipulated using Cypher.
+Before you run any of the algorithms, you need to import your data.  
 
-We begin by creating uniqueness constraints on each of the nodes, which make for efficient queries.  There is also an index created based on the geo-coordinates of each airport that can be used for spatial queries (not shown in this guide).
+We will use the Cypher command `LOAD CSV` to import our data into Neo4j from CSV files hosted on GitHub.  
+It will parse the CSV files line by line as objects that can then be manipulated using Cypher.
+
+We begin by creating uniqueness constraints on each of the nodes, which make for efficient queries.  
+There is also an index created based on the geo-coordinates of each airport that can be used for spatial queries (not shown in this guide).
 
 [source,cypher]
 ----
@@ -93,7 +108,9 @@ SET a.id = row.id,
     a.location = point({latitude: toFloat(row.lat), longitude: toFloat(row.lon)});
 ----
 
-Finally, we will import the `(Airport)-[:HAS_ROUTE]->(Airport)` relationship.  Note that relationship has a property of `distance`, indicating the distance between each of the airports.  We will later use this to create weighted graphs.
+Finally, we will import the `(Airport)-[:HAS_ROUTE]->(Airport)` relationship.  
+Note that relationship has a property of `distance`, indicating the distance between each of the airports.  
+We will later use this to create weighted graphs.
 
 [source,cypher]
 ----
@@ -104,9 +121,12 @@ MERGE (source)-[r:HAS_ROUTE]->(target)
 ON CREATE SET r.distance = toInteger(row.dist);
 ----
 
+endif::env-guide[]
+
 == Data visualization
 
-Prior to running some algorithms, it is helpful to visualize our data.  In order to do so, run the following query, which will give you the schema of the graph:
+Prior to running some algorithms, it is helpful to visualize our data.
+In order to do so, run the following query, which will give you the schema of the graph:
 
 [source,cypher]
 ----
@@ -117,7 +137,8 @@ Using this command, we can see our 5 different node and relationship types.
 
 == Basic graph exploratory data analysis (EDA)
 
-Prior to using any of the GDS algorithms it can also be beneficial to conduct basic Exploratory Data Analysis (EDA) and calculate some summary statistics on the data.  For example, to examine a few airport nodes within the graph and see what properties are associated with these nodes, we can run the following query:
+Prior to using any of the GDS algorithms it can also be beneficial to conduct basic Exploratory Data Analysis (EDA) and calculate some summary statistics on the data.
+For example, to examine a few airport nodes within the graph and see what properties are associated with these nodes, we can run the following query:
 
 [source,cypher]
 ----
@@ -151,23 +172,31 @@ RETURN min(routeDistance), max(routeDistance), avg(routeDistance), stdev(routeDi
 ----
 
 // Note that we cannot repeat the same query as in the original browser guide because that
-// graph had a property of "book" in its relationship.  We do not have the equivalent in 
+// graph had a property of "book" in its relationship.
+We do not have the equivalent in 
 // this graph.
 
 == Graph creation
 
-The first step in executing any GDS algorithm is to create a graph projection (also referred to as an in-memory graph) under a user-defined name.  Graph projections, stored in the graph catalog under a user-defined name, are subsets of our full graph to be used in calculating results through the GDS algorithms.  Their use enables GDS to run quickly and efficiently through the calculations.  In the creation of these projections, the nature of the graph elements may change in the following ways:
+The first step in executing any GDS algorithm is to create a graph projection (also referred to as an in-memory graph) under a user-defined name.
+Graph projections, stored in the graph catalog under a user-defined name, are subsets of our full graph to be used in calculating results through the GDS algorithms.
+Their use enables GDS to run quickly and efficiently through the calculations.
+In the creation of these projections, the nature of the graph elements may change in the following ways:
 
 * The direction of relationships may be changed
 * Node labels and relationship types may be renamed
 * Parallel Relationships may be aggregated
 
 
-In this section we will explore how to project a graph using the native projection approach.  It should be noted that graphs can also be created via link:https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/?ref=gds-sandbox#graph-project-examples[Cypher projections^], but these are beyond the scope of this guide.
+In this section we will explore how to project a graph using the native projection approach.
+It should be noted that graphs can also be created via link:https://neo4j.com/docs/graph-data-science/current/graph-project-cypher/?ref=gds-sandbox#graph-project-examples[Cypher projections^], but these are beyond the scope of this guide.
 
 == Graph catalog: creating a graph with native projections
 
-Native projections provide the fastest performance for creating a graph projection.  They take 3 mandatory parameters: `graphName`, `nodeProjection`, and `relationshipProjection`.  There are also optional `configuration` parameters that can be used to further configure the graph.  In general, the syntax for creating a native projection is:
+Native projections provide the fastest performance for creating a graph projection.
+They take 3 mandatory parameters: `graphName`, `nodeProjection`, and `relationshipProjection`.
+There are also optional `configuration` parameters that can be used to further configure the graph.
+In general, the syntax for creating a native projection is:
 
 ----
 CALL gds.graph.project(
@@ -200,19 +229,22 @@ YIELD
     graphName, nodeProjection, nodeCount, relationshipProjection, relationshipCount
 ----
 
-This is a very simple graph projection, but it is possible to add multiple node types and relationship types as well as properties for each of the nodes and relationships.  To see more examples of creating native graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project/?ref=gds-sandbox#graph-project-examples[GDS documentation^].
+This is a very simple graph projection, but it is possible to add multiple node types and relationship types as well as properties for each of the nodes and relationships.
+To see more examples of creating native graph projections, consult the link:https://neo4j.com/docs/graph-data-science/current/graph-project/?ref=gds-sandbox#graph-project-examples[GDS documentation^].
 
 
 == Graph catalog: listing and existence
 
-It is helpful to know which graphs are in the catalog and their properties.  To see this for all graphs, you use
+It is helpful to know which graphs are in the catalog and their properties.
+To see this for all graphs, you use
 
 [source,cypher]
 ----
 CALL gds.graph.list()
 ----
 
-You can also check this for an individual graph.  For example, using the `routes` graph we just created above, we can check the existence of the graph using:
+You can also check this for an individual graph.
+For example, using the `routes` graph we just created above, we can check the existence of the graph using:
 
 [source,cypher]
 ----
@@ -230,9 +262,13 @@ Once you have created a named graph projection, there are 4 different execution 
 
 In addition to the above for modes, it is possible to use `estimate` to obtain an estimation of how much memory a given algorithm will use.
 
-=== A special note on `mutate` mode
+=== A special note on "mutate" mode
 
-When it comes time for feature engineering, you will likely want to include some quantities calculated by GDS into your graph projection.  This is what `mutate` is for.  It does not change the database itself, but writes the results of the calculation to each node within the projected graph for future calculations.  This behavior is useful for when you are using more complicated graph algorithms or pipelines.  However, it is beyond the scope of this guide, but is covered in more detail in link:https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/?ref=gds-sandbox#running-algos-mutate[the API docs^].
+When it comes time for feature engineering, you will likely want to include some quantities calculated by GDS into your graph projection.
+This is what `mutate` is for.
+It does not change the database itself, but writes the results of the calculation to each node within the projected graph for future calculations.
+This behavior is useful for when you are using more complicated graph algorithms or pipelines.
+However, it is beyond the scope of this guide, but is covered in more detail in link:https://neo4j.com/docs/graph-data-science/current/common-usage/running-algos/?ref=gds-sandbox#running-algos-mutate[the API docs^].
 
 == Algorithm syntax: general algorithm use
 
@@ -251,13 +287,20 @@ where items in `[]` are optional. `<tier>`, if present, indicates whether the al
 
 image::https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/PageRanks-Example.svg/758px-PageRanks-Example.svg.png[float="right", width="300"]
 
-There are many ways to determine the centrality or importance of a node, but one of the most popular is through the calculation of PageRank.  PageRank measures the transitive (or directional) influence of a node.  The benefit to this approach is that it uses the influence of a node's neighbors to determine the influence of the target node.  The general idea is that a node that has more incoming and more influential links from other nodes is considered to be more important (i.e. a higher PageRank).
+There are many ways to determine the centrality or importance of a node, but one of the most popular is through the calculation of PageRank.
+PageRank measures the transitive (or directional) influence of a node.
+The benefit to this approach is that it uses the influence of a node's neighbors to determine the influence of the target node.
+The general idea is that a node that has more incoming and more influential links from other nodes is considered to be more important (i.e.
+a higher PageRank).
 
-The algorithm itself is an iterative algorithm.  The number of iterations can be set as a configuration parameter in GDS, however the algorithm can terminate if the node scores converge based on a specified tolerance value, which is also configurable in GDS.
+The algorithm itself is an iterative algorithm.
+The number of iterations can be set as a configuration parameter in GDS, however the algorithm can terminate if the node scores converge based on a specified tolerance value, which is also configurable in GDS.
 
 == PageRank example graph
 
-We will utilize the `routes` graph projection that we wrote before to calculate PageRank.  If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.  Attempting to recreate a graph with the same name will result in the following error:
+We will utilize the `routes` graph projection that we wrote before to calculate PageRank.
+If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.
+Attempting to recreate a graph with the same name will result in the following error:
 
 ----
 Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgumentException: A graph with name 'routes' already exists.
@@ -265,7 +308,8 @@ Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgu
 
 == PageRank: stream mode
 
-As previously stated, stream mode will output the results of the calculation without altering the database or the graph projection.  To do so, we use:
+As previously stated, stream mode will output the results of the calculation without altering the database or the graph projection.
+To do so, we use:
 
 [source,cypher]
 ----
@@ -276,9 +320,12 @@ RETURN n.iata AS iata, n.descr AS description, pageRank
 ORDER BY pageRank DESC, iata ASC
 ----
 
-This gives us a list of airports ordered by decreasing PageRank. The utility function `gds.util.asNode()` maps the nodes from the database to the GDS stream results, allowing us to include properties from the database in our final query result. In this case we included airport IATA code and description.
+This gives us a list of airports ordered by decreasing PageRank.
+The utility function `gds.util.asNode()` maps the nodes from the database to the GDS stream results, allowing us to include properties from the database in our final query result.
+In this case we included airport IATA code and description.
 
-While we don’t show it here, PageRank can also run weighted via a relationship property which can prove useful in many scenarios where there is a quantity, strength, or other numeric property that we want to weigh the PageRank score with. Please see the link:https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/?ref=gds-sandbox#algorithms-page-rank-examples-weighted[GDS documentation^] if you are interested in running PageRank with relationship weights.
+While we don’t show it here, PageRank can also run weighted via a relationship property which can prove useful in many scenarios where there is a quantity, strength, or other numeric property that we want to weigh the PageRank score with.
+Please see the link:https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/?ref=gds-sandbox#algorithms-page-rank-examples-weighted[GDS documentation^] if you are interested in running PageRank with relationship weights.
 
 == PageRank: write mode
 
@@ -307,13 +354,23 @@ As we can see, the results are identical to the streamed version.
 
 == Community (cluster) detection via Louvain Modularity
 
-As with centrality measurements, there are many ways to identify communities within a graph.  Community detection is a useful tool for identifying regions of a graph that are densely clustered.  For example, in our airport routes graph, community detection can help us identify natural clusters of airports that formed from the large number of routes they have between each other.
+As with centrality measurements, there are many ways to identify communities within a graph.
+Community detection is a useful tool for identifying regions of a graph that are densely clustered.
+For example, in our airport routes graph, community detection can help us identify natural clusters of airports that formed from the large number of routes they have between each other.
 
-We will cover the popular Louvain Modularity method in this section.  This algorithm finds clusters within a graph by measuring the relative density of relationships.  This is quantified through the _modularity score_, which is a comparison of the density of relationships within a cluster to an average or random sample.  So the higher the modularity, the more dense the cluster is.  The Louvain method thus attempts to maximize the modularity across the graph through a recursive approach.  As with PageRank, in GDS the user can specify a maximum number of iterations as well as a tolerance factor for early termination.  Additionally, the algorithm is able to return the intermediate community assignments along the way to convergence.  
+We will cover the popular Louvain Modularity method in this section.
+This algorithm finds clusters within a graph by measuring the relative density of relationships.
+This is quantified through the _modularity score_, which is a comparison of the density of relationships within a cluster to an average or random sample.
+So the higher the modularity, the more dense the cluster is.
+The Louvain method thus attempts to maximize the modularity across the graph through a recursive approach.
+As with PageRank, in GDS the user can specify a maximum number of iterations as well as a tolerance factor for early termination.
+Additionally, the algorithm is able to return the intermediate community assignments along the way to convergence.  
 
 == Louvain example graph
 
-We will utilize the `routes` graph projection that we wrote before.  If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.  Attempting to recreate a graph with the same name will result in the following error:
+We will utilize the `routes` graph projection that we wrote before.
+If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.
+Attempting to recreate a graph with the same name will result in the following error:
 
 ----
 Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgumentException: A graph with name 'routes' already exists.
@@ -321,7 +378,8 @@ Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgu
 
 == Louvain: example
 
-Using the stream mode, let's explore the results of the algorithm.  We will use the following query:
+Using the stream mode, let's explore the results of the algorithm.
+We will use the following query:
 
 [source,cypher]
 ----
@@ -335,23 +393,36 @@ RETURN
 ORDER BY numberOfAirports DESC, communityId;
 ----
 
-In this case we have obtained the community IDs and counted the number of airports in each community using the combination of `COLLECT`, which creates a list of the results, and `SIZE`, which returns the size of a list.  We also return a list of the cities in each community.
+In this case we have obtained the community IDs and counted the number of airports in each community using the combination of `COLLECT`, which creates a list of the results, and `SIZE`, which returns the size of a list.
+We also return a list of the cities in each community.
 
-Exploring this list, we can see that the largest community corresponds to airports in the United States, the second largest to airports in Europe, and so on.  At surface inspection, these results make sense in that the airports in the graph appear to be clustered based on continent.
+Exploring this list, we can see that the largest community corresponds to airports in the United States, the second largest to airports in Europe, and so on.
+At surface inspection, these results make sense in that the airports in the graph appear to be clustered based on continent.
 
 As before, should we wish to write these results as node properties, we can use `gds.louvain.write()`.
 
 == Node similarity
 
-As with the previous algorithm categories of centrality and community detection, there are various ways to calculate node similarity.  In general, node similarity is computed between pairs of nodes through different vector-based metrics.  This is useful for things like recommendation engines where you want to, for example, recommend similar objects to purchase based on a customer's previous purchases.  In this section we will use the link:https://neo4j.com/docs/graph-data-science/current/algorithms/node-similarity/?ref=gds-sandbox[GDS Node Similarity^] algorithm, which leverages the common approach of the link:https://en.wikipedia.org/wiki/Jaccard_index[Jaccard similarity score^].  This may not be the most ideal graph to calculate node similarity on, but it is a common approach that we will demonstrate in this section.
+As with the previous algorithm categories of centrality and community detection, there are various ways to calculate node similarity.
+In general, node similarity is computed between pairs of nodes through different vector-based metrics.
+This is useful for things like recommendation engines where you want to, for example, recommend similar objects to purchase based on a customer's previous purchases.
+In this section we will use the link:https://neo4j.com/docs/graph-data-science/current/algorithms/node-similarity/?ref=gds-sandbox[GDS Node Similarity^] algorithm, which leverages the common approach of the link:https://en.wikipedia.org/wiki/Jaccard_index[Jaccard similarity score^].
+This may not be the most ideal graph to calculate node similarity on, but it is a common approach that we will demonstrate in this section.
 
-Jaccard based node similarity looks at how many common neighbors are shared between a pair of two nodes. In this context, a node’s neighbor refers to any other node connected by an outbound relationship. Loosely speaking, the larger the proportion of shared neighbors between the two nodes in the pair, the higher their similarity will be, with a minimum value of 0 (no shared neighbors) and a max value of 1 (all neighbors are shared).
+Jaccard based node similarity looks at how many common neighbors are shared between a pair of two nodes.
+In this context, a node’s neighbor refers to any other node connected by an outbound relationship.
+Loosely speaking, the larger the proportion of shared neighbors between the two nodes in the pair, the higher their similarity will be, with a minimum value of 0 (no shared neighbors) and a max value of 1 (all neighbors are shared).
 
-It should be noted that running node similarity scales quadratically with the number of nodes in the graph.  To help minimize the run time, particularly on larger graphs, it is possible to set cutoffs on the degree of the nodes (the number of incoming or outgoing relationships) as well as a similarity score cutoff.  This then reduces the number of pair-wise combinations that must be evaluated.  The result set can also be limited via total pairs returned (referred to as `N` in the documentation) or pairs per node (referred to as `K` in the documentation).
+It should be noted that running node similarity scales quadratically with the number of nodes in the graph.
+To help minimize the run time, particularly on larger graphs, it is possible to set cutoffs on the degree of the nodes (the number of incoming or outgoing relationships) as well as a similarity score cutoff.
+This then reduces the number of pair-wise combinations that must be evaluated.
+The result set can also be limited via total pairs returned (referred to as `N` in the documentation) or pairs per node (referred to as `K` in the documentation).
 
 == Node similarity: example graph
 
-We will utilize the `routes` graph projection that we wrote before.  If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.  Attempting to recreate a graph with the same name will result in the following error:
+We will utilize the `routes` graph projection that we wrote before.
+If you have not created this graph projection or already deleted this graph projection, you will need to recreate it.
+Attempting to recreate a graph with the same name will result in the following error:
 
 ----
 Failed to invoke procedure `gds.graph.project`: Caused by: java.lang.IllegalArgumentException: A graph with name 'routes' already exists.
@@ -372,9 +443,13 @@ RETURN
     COLLECT({iata:n2.iata, city:n2.city, similarityScore: similarity}) AS similarAirports
 ORDER BY city LIMIT 20
 ----
-//Depending on how I ran browser, nbamely if I run in Desktop, things get slow and laggy with a lot of results so I applied a LIMIT.  I think this has to do with the way maps are rendered in browser table.
+//Depending on how I ran browser, nbamely if I run in Desktop, things get slow and laggy with a lot of results so I applied a LIMIT.
+I think this has to do with the way maps are rendered in browser table.
 
-The algorithm returned the top 10 most similar airports for each airport node in the graph.  We applied a `LIMIT` at the end of the query to show fraction of the full results.   What has happened here behind the scenes is that GDS has limited, on a per node basis (`K`), the number of results being returned, established by the configuration parameter `topK`, which has a default value of 10.  We could restrict this further by altering the above query as:
+The algorithm returned the top 10 most similar airports for each airport node in the graph.
+We applied a `LIMIT` at the end of the query to show fraction of the full results.
+What has happened here behind the scenes is that GDS has limited, on a per node basis (`K`), the number of results being returned, established by the configuration parameter `topK`, which has a default value of 10.
+We could restrict this further by altering the above query as:
 
 [source,cypher]
 ----
@@ -395,7 +470,8 @@ ORDER BY city LIMIT 20
 
 == Node similarity: topN and bottomN
 
-As previously stated, we can limit the number of similarity scores across all nodes by specifying `topN`, the largest overall similarity scores in the graph. Below is an example
+As previously stated, we can limit the number of similarity scores across all nodes by specifying `topN`, the largest overall similarity scores in the graph.
+Below is an example
 
 [source,cypher]
 ----
@@ -418,11 +494,14 @@ ORDER BY city
 
 In this case, we have calculated the highest scoring similarity pairs for each airport (`topK: 1`) and then returned the 10 airport pairs with the highest similarity across the whole graph (`topN: 10`).
 
-We can also limit the similarity scores across all nodes by specifying `bottomN` which will do the reverse of `topN`, storing the lowest scores.  This is useful for identifying nodes with relatively few similarities to other nodes in the graph.  Please see the https://neo4j.com/docs/graph-data-science/current/algorithms/node-similarity/#algorithms-node-similarity-examples-limits-topn-bottomn[GDS Documentation^] if you are interested in more details on `bottomN`.
+We can also limit the similarity scores across all nodes by specifying `bottomN` which will do the reverse of `topN`, storing the lowest scores.
+This is useful for identifying nodes with relatively few similarities to other nodes in the graph.
+Please see the https://neo4j.com/docs/graph-data-science/current/algorithms/node-similarity/#algorithms-node-similarity-examples-limits-topn-bottomn[GDS Documentation^] if you are interested in more details on `bottomN`.
 
 == Node similarity: degree and similarity cutoff
 
-Another way of limiting the number of calculations done is to provide a minimum value of degree for a node to be considered in the overall calculations, such as below where we require a minimum degree of 100 (i.e. a minimum of 100 flights coming in to and out of an airport):
+Another way of limiting the number of calculations done is to provide a minimum value of degree for a node to be considered in the overall calculations, such as below where we require a minimum degree of 100 (i.e.
+a minimum of 100 flights coming in to and out of an airport):
 
 [source,cypher]
 ----
@@ -462,13 +541,17 @@ ORDER BY city LIMIT 20
 
 == Path Finding
 
-Like all the other algorithm categories we have explored, there are several possible approaches for path finding.  Generally speaking, the purpose of path finding is to find the shortest path between two or more nodes.  In the case of our airport route graph, this would help us identify which airport connections would be required to minimize the overall flight distance.
+Like all the other algorithm categories we have explored, there are several possible approaches for path finding.
+Generally speaking, the purpose of path finding is to find the shortest path between two or more nodes.
+In the case of our airport route graph, this would help us identify which airport connections would be required to minimize the overall flight distance.
 
 In this section we will use the common link:https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm[Dijkstra's algorithm^] to find the shortest path between two nodes.
 
 == Creating a weighted graph projection
 
-In our previous examples we did not consider the distance of routes between airports.  However,  in this case, we will want to use route distance as a weight in Dijkstra so the resulting shortest paths reflect those with the shortest physical distances. To do this we must first include route distance as a relationship property in our graph projection like so:
+In our previous examples we did not consider the distance of routes between airports.
+However,  in this case, we will want to use route distance as a weight in Dijkstra so the resulting shortest paths reflect those with the shortest physical distances.
+To do this we must first include route distance as a relationship property in our graph projection like so:
 
 [source,cypher]
 ----
@@ -507,7 +590,9 @@ RETURN
 ORDER BY index
 ----
 
-We can see in the above query that we are specifying a source and target node and using the `relationshipWeightProperty` of `distance`.  From there, many things are returned, including the total cost (similar to distance, usually representing the straight-line distance between two nodes while ignoring other potential sources of delay such as time spent taxiing, etc.), and a listing of the airports along this path.  In this case, we see that the shortest path is 4 hops long -- perhaps not practical, but the total distance is minimized.
+We can see in the above query that we are specifying a source and target node and using the `relationshipWeightProperty` of `distance`.
+From there, many things are returned, including the total cost (similar to distance, usually representing the straight-line distance between two nodes while ignoring other potential sources of delay such as time spent taxiing, etc.), and a listing of the airports along this path.
+In this case, we see that the shortest path is 4 hops long -- perhaps not practical, but the total distance is minimized.
 
 Give this a try with your favorite airports!
 
@@ -515,7 +600,11 @@ Give this a try with your favorite airports!
 
 image:https://guides.neo4j.com/graph-data-science2/gds_algo_compatibility.png[role="left",width=600]
 
-Not all GDS algorithms will run on every type of graph projection.  Some algorithms prefer homogeneous to heterogeneous graphs.  Others will only work properly on undirected graphs.  Some will not work with relationships weights.  You should always consult the link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[API docs^] for your chosen algorithm to verify what is required for your graph.
+Not all GDS algorithms will run on every type of graph projection.
+Some algorithms prefer homogeneous to heterogeneous graphs.
+Others will only work properly on undirected graphs.
+Some will not work with relationships weights.
+You should always consult the link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[API docs^] for your chosen algorithm to verify what is required for your graph.
 
 
 == Cleaning up
@@ -530,8 +619,10 @@ CALL gds.graph.drop('routes-weighted');
 
 == The end
 
-Congratulations!  You have taken your first steps into using Neo4j Graph Data Science!  This tutorial just looked at the basics of how to run graph algorithms and demonstrated the approach on a very limited number of basic algorithms.  To learn more about what other algorithms exists as well as details for all of their configurations, please see link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[the GDS documentation^].
+Congratulations!  You have taken your first steps into using Neo4j Graph Data Science!  This tutorial just looked at the basics of how to run graph algorithms and demonstrated the approach on a very limited number of basic algorithms.
+To learn more about what other algorithms exists as well as details for all of their configurations, please see link:https://neo4j.com/docs/graph-data-science/current/?ref=gds-sandbox[the GDS documentation^].
 
 === Next steps
 
-If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/aurads/?ref=gds-sandbox[AuraDS^]!  Alternatively, you can also explore more in the link:https://sandbox.neo4j.com/?ref=gds-sandbox[Neo4j Sandbox^], link:https://neo4j.com/download/?ref=get-started-dropdown-cta/?ref=gds-sandbox[Neo4j Desktop^], or link:https://neo4j.com/developer/docker/?ref=gds-sandbox[Docker^].  Additionally, please check out the link:https://neo4j.com/video/bite-sized-neo4j-for-data-scientists/?ref=gds-sandbox[Bite-Sized Neo4j for Data Scientists^] video series for several short videos demonstrating the use of Neo4j and GDS for data science.
+If you would like to work efficiently with larger graphs using a fully-managed cloud service, then check out link:https://neo4j.com/cloud/aurads/?ref=gds-sandbox[AuraDS^]!  Alternatively, you can also explore more in the link:https://sandbox.neo4j.com/?ref=gds-sandbox[Neo4j Sandbox^], link:https://neo4j.com/download/?ref=get-started-dropdown-cta/?ref=gds-sandbox[Neo4j Desktop^], or link:https://neo4j.com/developer/docker/?ref=gds-sandbox[Docker^].
+Additionally, please check out the link:https://neo4j.com/video/bite-sized-neo4j-for-data-scientists/?ref=gds-sandbox[Bite-Sized Neo4j for Data Scientists^] video series for several short videos demonstrating the use of Neo4j and GDS for data science.
